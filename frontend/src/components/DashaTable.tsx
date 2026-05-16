@@ -284,11 +284,11 @@ const DashaTable = ({ dob, mahadashas, antardashas }: DashaTableProps) => {
       styles: { fontSize: 7.5 },
     });
 
-    // Daily Dasha
-    sectionTitle('Daily Dasha — Day by Day');
-    const ddRows: (string | number)[][] = [];
-    antardashas.forEach(a => {
-      const pds = calculatePratyantars(a.number, a.startDate);
+    // Daily Dasha - Only for the current active Antardasha to save space
+    if (cur.ad) {
+      sectionTitle(`Daily Dasha — Current Year (Age ${cur.ad.age})`);
+      const ddRows: (string | number)[][] = [];
+      const pds = calculatePratyantars(cur.ad.number, cur.ad.startDate);
       pds.forEach(p => {
         buildDailyDashas(p).forEach(d => {
           ddRows.push([
@@ -297,16 +297,16 @@ const DashaTable = ({ dob, mahadashas, antardashas }: DashaTableProps) => {
           ]);
         });
       });
-    });
-    autoTable(doc, {
-      startY: 56,
-      head: [['Date', 'Weekday', 'WD#', 'PD', 'Total', 'DD#', 'DD Planet']],
-      body: ddRows,
-      theme: 'striped',
-      headStyles: { fillColor: [170, 130, 30], textColor: 255 },
-      styles: { fontSize: 7 },
-      rowPageBreak: 'auto',
-    });
+      autoTable(doc, {
+        startY: 56,
+        head: [['Date', 'Weekday', 'WD#', 'PD', 'Total', 'DD#', 'DD Planet']],
+        body: ddRows,
+        theme: 'striped',
+        headStyles: { fillColor: [170, 130, 30], textColor: 255 },
+        styles: { fontSize: 7 },
+        rowPageBreak: 'auto',
+      });
+    }
 
     // Page numbers
     const pageCount = doc.getNumberOfPages();
