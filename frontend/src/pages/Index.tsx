@@ -1,4 +1,5 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useContext } from "react";
+import { Link, useSearchParams } from "react-router-dom";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { CalendarIcon, Moon, Sun, LayoutGrid, List } from "lucide-react";
@@ -14,15 +15,36 @@ import {
 import VedicGrid from "@/components/VedicGrid";
 import DashaTable from "@/components/DashaTable";
 import DashaGrid from "@/components/DashaGrid";
+import { AuthContext } from "@/context/AuthContext";
+
+// Example static mapping for student IDs if applicable, or logic can be dynamic
+const STUDENTS: Record<string, { name: string; dob: string }> = {};
 
 const Index = () => {
-  const [dobInput, setDobInput] = useState("");
-  const [nameInput, setNameInput] = useState("");
+  const [searchParams] = useSearchParams();
+  const studentId = searchParams.get('student');
+  const student = studentId ? STUDENTS[studentId] : null;
+
+  const { user, logout } = useContext(AuthContext);
+
+  const [dobInput, setDobInput] = useState(student?.dob ?? "");
+  const [nameInput, setNameInput] = useState(student?.name ?? "");
   const [dateObj, setDateObj] = useState<Date | null>(null);
   
   const [view, setView] = useState<'grid' | 'table'>('grid');
   const [tab, setTab] = useState<'mahadasha' | 'yearly' | 'monthly' | 'daily'>('mahadasha');
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+
+  // Set dateObj if dobInput is provided on load
+  useEffect(() => {
+    if (dobInput) {
+      const parsed = new Date(dobInput);
+      if (!isNaN(parsed.getTime())) {
+        const localDate = new Date(parsed.getTime() + parsed.getTimezoneOffset() * 60000);
+        setDateObj(localDate);
+      }
+    }
+  }, [dobInput]);
 
   // Load theme on mount
   useEffect(() => {
@@ -46,7 +68,6 @@ const Index = () => {
     if (val) {
       const parsed = new Date(val);
       if (!isNaN(parsed.getTime())) {
-        // Adjust for timezone offset to prevent date shifting
         const localDate = new Date(parsed.getTime() + parsed.getTimezoneOffset() * 60000);
         setDateObj(localDate);
       } else {
@@ -72,28 +93,55 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
-      <header className="flex justify-between items-center px-6 py-4 border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
-        <h1 className="text-xl font-bold text-primary tracking-wide">DAVE NUMEROLOGY</h1>
+      <header className="flex flex-col sm:flex-row justify-between items-center px-6 py-4 border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50 gap-4">
+        <div>
+          <h1 className="text-xl font-bold text-primary tracking-wide">DAVE NUMEROLOGY</h1>
+          <p className="text-[10px] text-muted-foreground uppercase tracking-[1px] mt-0.5">Precision 120-Year Dasha • Standalone</p>
+        </div>
         
-        <div className="flex items-center gap-4">
-          <div className="flex bg-muted/50 rounded-lg p-1 border border-border">
-            <button 
-              onClick={() => setView('grid')}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${view === 'grid' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
-            >
-              <LayoutGrid className="w-4 h-4" /> Grid
-            </button>
-            <button 
-              onClick={() => setView('table')}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${view === 'table' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
-            >
-              <List className="w-4 h-4" /> Table
-            </button>
+        <div className="flex flex-wrap items-center justify-center gap-4">
+          {user && (
+            <div className="flex items-center gap-3 pr-4 border-r border-border">
+              <div className="text-right hidden xs:block">
+                <p className="text-sm font-semibold text-foreground">Welcome, {user.name}</p>
+                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{user.isAdmin ? 'Administrator' : 'Student'}</p>
+              </div>
+              <div className="flex gap-2">
+                {user.isAdmin && (
+                  <Link to="/admin" className="text-[11px] font-bold uppercase tracking-wider bg-primary text-primary-foreground px-3 py-1.5 rounded-md hover:opacity-90 transition-all">
+                    Admin
+                  </Link>
+                )}
+                <Link to="/settings" className="text-[11px] font-bold uppercase tracking-wider bg-secondary text-secondary-foreground px-3 py-1.5 rounded-md hover:bg-secondary/80 transition-all">
+                  Settings
+                </Link>
+                <button onClick={logout} className="text-[11px] font-bold uppercase tracking-wider bg-secondary text-secondary-foreground px-3 py-1.5 rounded-md hover:bg-secondary/80 transition-all">
+                  Logout
+                </button>
+              </div>
+            </div>
+          )}
+
+          <div className="flex items-center gap-4">
+            <div className="flex bg-muted/50 rounded-lg p-1 border border-border">
+              <button 
+                onClick={() => setView('grid')}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${view === 'grid' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+              >
+                <LayoutGrid className="w-4 h-4" /> Grid
+              </button>
+              <button 
+                onClick={() => setView('table')}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${view === 'table' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+              >
+                <List className="w-4 h-4" /> Table
+              </button>
+            </div>
+            
+            <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-full">
+              {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+            </Button>
           </div>
-          
-          <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-full">
-            {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-          </Button>
         </div>
       </header>
 
