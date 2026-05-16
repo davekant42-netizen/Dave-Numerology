@@ -235,3 +235,21 @@ export function findCurrentStatus(
 
   return { md, ad, pd };
 }
+
+/**
+ * Subdivide an Antardasha year into 12 equal months.
+ * Sequence 1-9 looping from the AD number.
+ */
+export function buildMonths(ad: AntardashaEntry) {
+  const ms = ad.endDate.getTime() - ad.startDate.getTime();
+  const seg = ms / 12;
+  const months: { number: number; planet: string; start: Date; end: Date }[] = [];
+  let n = ad.number;
+  for (let i = 0; i < 12; i++) {
+    const start = new Date(ad.startDate.getTime() + seg * i);
+    const end = new Date(ad.startDate.getTime() + seg * (i + 1));
+    months.push({ number: n, planet: PLANET_MAP[n], start, end });
+    n = n === 9 ? 1 : n + 1;
+  }
+  return months;
+}
