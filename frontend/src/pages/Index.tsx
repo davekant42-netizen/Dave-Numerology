@@ -93,54 +93,69 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
-      <header className="flex flex-col sm:flex-row justify-between items-center px-6 py-4 border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50 gap-4">
-        <div>
-          <h1 className="text-xl font-bold text-primary tracking-wide">DAVE NUMEROLOGY</h1>
-          <p className="text-[10px] text-muted-foreground uppercase tracking-[1px] mt-0.5">Precision 120-Year Dasha • Standalone</p>
-        </div>
-        
-        <div className="flex flex-wrap items-center justify-center gap-4">
-          {user && (
-            <div className="flex items-center gap-3 pr-4 border-r border-border">
-              <div className="text-right hidden xs:block">
-                <p className="text-sm font-semibold text-foreground">Welcome, {user.name}</p>
-                <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{user.isAdmin ? 'Administrator' : 'Student'}</p>
+      <header className="border-b border-border px-4 sm:px-6 py-4 bg-card/50 backdrop-blur-sm sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 flex-wrap sm:flex-nowrap">
+          <div>
+            <h1 className="text-xl font-display font-bold text-primary tracking-tight">
+              DAVE Numerology
+            </h1>
+            <p className="text-xs text-muted-foreground">Precision calculations • 120-Year Dasha</p>
+          </div>
+          
+          <div className="flex items-center gap-4 flex-wrap sm:flex-nowrap justify-end flex-1">
+            {student && (
+              <div className="text-right border-r border-border pr-4 hidden xs:block">
+                <p className="text-sm font-semibold text-foreground">{student.name}</p>
+                <p className="text-xs text-muted-foreground">Student</p>
               </div>
+            )}
+            
+            <div className="text-right flex items-center gap-3">
+              <p className="text-sm text-muted-foreground hidden md:block">Welcome, <span className="font-semibold text-foreground">{user?.name}</span></p>
+              
               <div className="flex gap-2">
-                {user.isAdmin && (
-                  <Link to="/admin" className="text-[11px] font-bold uppercase tracking-wider bg-primary text-primary-foreground px-3 py-1.5 rounded-md hover:opacity-90 transition-all">
-                    Admin
+                {user?.isAdmin && (
+                  <Link 
+                    to="/admin"
+                    className="text-xs bg-primary text-primary-foreground px-3 py-1.5 rounded-md hover:opacity-90 transition-colors font-semibold"
+                  >
+                    Admin Dashboard
                   </Link>
                 )}
-                <Link to="/settings" className="text-[11px] font-bold uppercase tracking-wider bg-secondary text-secondary-foreground px-3 py-1.5 rounded-md hover:bg-secondary/80 transition-all">
+
+                <Link to="/settings" className="text-xs bg-secondary text-secondary-foreground px-3 py-1.5 rounded-md hover:bg-secondary/80 transition-colors font-semibold">
                   Settings
                 </Link>
-                <button onClick={logout} className="text-[11px] font-bold uppercase tracking-wider bg-secondary text-secondary-foreground px-3 py-1.5 rounded-md hover:bg-secondary/80 transition-all">
+
+                <button 
+                  onClick={logout}
+                  className="text-xs bg-secondary text-secondary-foreground px-3 py-1.5 rounded-md hover:bg-secondary/80 transition-colors font-semibold"
+                >
                   Logout
                 </button>
               </div>
             </div>
-          )}
 
-          <div className="flex items-center gap-4">
-            <div className="flex bg-muted/50 rounded-lg p-1 border border-border">
-              <button 
-                onClick={() => setView('grid')}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${view === 'grid' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
-              >
-                <LayoutGrid className="w-4 h-4" /> Grid
-              </button>
-              <button 
-                onClick={() => setView('table')}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${view === 'table' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
-              >
-                <List className="w-4 h-4" /> Table
-              </button>
+            <div className="flex items-center gap-3 border-l border-border pl-4">
+              <div className="flex bg-muted/50 rounded-lg p-0.5 border border-border">
+                <button 
+                  onClick={() => setView('grid')}
+                  className={`px-2 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider transition-all ${view === 'grid' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground'}`}
+                >
+                  Grid
+                </button>
+                <button 
+                  onClick={() => setView('table')}
+                  className={`px-2 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider transition-all ${view === 'table' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground'}`}
+                >
+                  Table
+                </button>
+              </div>
+              
+              <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-full w-8 h-8">
+                {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              </Button>
             </div>
-            
-            <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-full">
-              {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-            </Button>
           </div>
         </div>
       </header>
