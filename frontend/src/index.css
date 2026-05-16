@@ -1,0 +1,90 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 220 20% 7%;
+    --foreground: 40 20% 90%;
+
+    --card: 220 18% 10%;
+    --card-foreground: 40 20% 90%;
+
+    --popover: 220 18% 12%;
+    --popover-foreground: 40 20% 90%;
+
+    --primary: 38 90% 55%;
+    --primary-foreground: 220 20% 7%;
+
+    --secondary: 220 15% 15%;
+    --secondary-foreground: 40 15% 75%;
+
+    --muted: 220 15% 13%;
+    --muted-foreground: 220 10% 50%;
+
+    --accent: 38 70% 45%;
+    --accent-foreground: 220 20% 7%;
+
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 15% 18%;
+    --input: 220 15% 18%;
+    --ring: 38 90% 55%;
+
+    --radius: 0.5rem;
+
+    --gold-glow: 38 100% 65%;
+    --surface-elevated: 220 18% 13%;
+    --number-highlight: 38 95% 60%;
+
+    --sidebar-background: 220 20% 7%;
+    --sidebar-foreground: 40 20% 90%;
+    --sidebar-primary: 38 90% 55%;
+    --sidebar-primary-foreground: 220 20% 7%;
+    --sidebar-accent: 220 15% 15%;
+    --sidebar-accent-foreground: 40 20% 90%;
+    --sidebar-border: 220 15% 18%;
+    --sidebar-ring: 38 90% 55%;
+
+    --font-display: 'Space Grotesk', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-display);
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: var(--font-display);
+  }
+  .font-mono {
+    font-family: var(--font-mono);
+  }
+  .gold-glow {
+    box-shadow: 0 0 20px -5px hsl(var(--primary) / 0.3);
+  }
+  .number-cell {
+    @apply font-mono text-center tabular-nums;
+    color: hsl(var(--number-highlight));
+  }
+  .table-header-cell {
+    @apply px-3 py-2 text-left text-xs font-semibold uppercase tracking-wider;
+    color: hsl(var(--muted-foreground));
+  }
+  .table-data-cell {
+    @apply px-3 py-2 text-sm;
+    color: hsl(var(--foreground));
+  }
+}
