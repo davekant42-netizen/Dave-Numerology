@@ -342,7 +342,7 @@ const DashaTable = ({ dob, mahadashas, antardashas }: DashaTableProps) => {
           className="ml-auto inline-flex items-center gap-2 rounded-md border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary hover:bg-primary/20 hover:border-primary/60 transition-colors"
         >
           <Download className="h-3.5 w-3.5" />
-          Download All (Excel)
+          Download All
         </button>
         {isCustomRange && (
           <div className="flex items-center gap-2">
