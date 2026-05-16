@@ -1,11 +1,13 @@
 import { collectGridNumbers, MahadashaEntry, AntardashaEntry, PratyantarEntry } from '@/lib/numerology';
 
 interface VedicGridProps {
-  dob: Date;
+  dob?: Date;
+  customNumbers?: number[];
+  small?: boolean;
   currentStatus?: {
-    md?: MahadashaEntry;
-    ad?: AntardashaEntry;
-    pd?: PratyantarEntry;
+    md?: MahadashaEntry | { number: number; planet: string };
+    ad?: AntardashaEntry | { number: number; planet: string };
+    pd?: PratyantarEntry | { number: number; planet: string };
     todayDD?: number;
   };
 }
@@ -16,8 +18,8 @@ const GRID = [
   [2, 8, 4],
 ];
 
-const VedicGrid = ({ dob, currentStatus }: VedicGridProps) => {
-  const numbers = collectGridNumbers(dob);
+const VedicGrid = ({ dob, customNumbers, small = false, currentStatus }: VedicGridProps) => {
+  const numbers = customNumbers || (dob ? collectGridNumbers(dob) : []);
 
   const counts: Record<number, number> = {};
   for (const n of numbers) {
@@ -40,39 +42,53 @@ const VedicGrid = ({ dob, currentStatus }: VedicGridProps) => {
 
   // Helper for color styles based on periods
   const getPeriodStyle = (periods: string[]) => {
-    if (!periods.length) return '';
-    const topPeriod = periods[0];
+    if (!periods.length) return {};
     
-    switch(topPeriod) {
-      case 'md': return 'bg-red-500/20 border-red-500 text-red-500 shadow-[0_0_10px_rgba(239,68,68,0.3)]';
-      case 'ad': return 'bg-blue-500/20 border-blue-500 text-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.3)]';
-      case 'pd': return 'bg-green-500/20 border-green-500 text-green-500 shadow-[0_0_10px_rgba(34,197,94,0.3)]';
-      case 'dd': return 'bg-amber-500/20 border-amber-500 text-amber-500 shadow-[0_0_10px_rgba(245,158,11,0.3)]';
-      default: return '';
+    if (periods.length === 1) {
+      const p = periods[0];
+      return { 
+        background: `hsl(var(--${p}-color) / 0.15)`,
+        borderColor: `hsl(var(--${p}-color) / 0.5)`,
+        color: `hsl(var(--${p}-color))`,
+        boxShadow: `0 0 10px hsl(var(--${p}-color) / 0.3)`
+      };
+    } else {
+      // Multiple periods: Create a gradient for the background
+      const stops = periods.map((p, i) => `hsl(var(--${p}-color) / 0.28) ${(i / (periods.length - 1)) * 100}%`).join(', ');
+      return {
+        background: `linear-gradient(135deg, ${stops})`,
+        borderColor: `hsl(var(--${periods[0]}-color) / 0.6)`,
+        color: `hsl(var(--${periods[0]}-color))`,
+        boxShadow: `0 0 10px hsl(var(--${periods[0]}-color) / 0.4)`
+      };
     }
   };
 
-  const getBadgeClass = (p: string) => {
-    switch(p) {
-      case 'md': return 'bg-red-500 text-white';
-      case 'ad': return 'bg-blue-500 text-white';
-      case 'pd': return 'bg-green-500 text-white';
-      case 'dd': return 'bg-amber-500 text-white';
-      default: return 'bg-gray-500 text-white';
-    }
+  const getBadgeStyle = (p: string) => {
+    return {
+      background: `hsl(var(--${p}-color))`,
+      color: '#fff'
+    };
   };
 
   return (
-    <div className="grid grid-cols-3 gap-1.5">
+    <div className={`grid grid-cols-3 ${small ? 'gap-[2px]' : 'gap-1.5'}`}>
       {GRID.flat().map((digit, i) => {
         const count = counts[digit] || 0;
         const active = count > 0;
         const periods = periodMap[digit] || [];
         
-        let containerClass = 'relative w-16 h-16 flex items-center justify-center rounded-md border text-center font-mono text-sm font-bold transition-colors ';
+        let containerClass = `relative flex items-center justify-center rounded-md border text-center font-mono font-bold transition-colors `;
         
+        if (small) {
+          containerClass += 'w-8 h-8 text-[11px] ';
+        } else {
+          containerClass += 'w-16 h-16 text-sm ';
+        }
+        
+        let inlineStyle = {};
         if (periods.length > 0) {
-          containerClass += getPeriodStyle(periods);
+          inlineStyle = getPeriodStyle(periods);
         } else if (active) {
           containerClass += 'bg-primary/10 border-primary/50 text-primary';
         } else {
@@ -80,13 +96,13 @@ const VedicGrid = ({ dob, currentStatus }: VedicGridProps) => {
         }
 
         return (
-          <div key={i} className={containerClass}>
-            {active ? Array(count).fill(digit).join(', ') : digit}
+          <div key={i} className={containerClass} style={inlineStyle}>
+            {active ? Array(count).fill(digit).join(small ? '' : ', ') : digit}
             
-            {periods.length > 0 && (
+            {periods.length > 0 && !small && (
               <div className="absolute -top-1.5 -right-1.5 flex flex-col gap-0.5 items-end">
                 {periods.map(p => (
-                  <span key={p} className={`text-[8px] font-extrabold px-1 py-0.5 rounded-full min-w-[20px] text-center leading-none shadow-sm ${getBadgeClass(p)}`}>
+                  <span key={p} className="text-[8px] font-extrabold px-1 py-0.5 rounded-full min-w-[20px] text-center leading-none shadow-sm" style={getBadgeStyle(p)}>
                     {p.toUpperCase()}
                   </span>
                 ))}

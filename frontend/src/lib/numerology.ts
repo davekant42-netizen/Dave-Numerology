@@ -214,6 +214,32 @@ export function calculatePratyantars(adNumber: number, adStart: Date): Pratyanta
   return entries;
 }
 
+export interface MonthlyEntry {
+  number: number;
+  planet: string;
+  startDate: Date;
+  endDate: Date;
+}
+
+export function buildMonths(ad: AntardashaEntry): MonthlyEntry[] {
+  const ms = ad.endDate.getTime() - ad.startDate.getTime();
+  const seg = ms / 12;
+  const out: MonthlyEntry[] = [];
+  let n = ad.number;
+  
+  for (let i = 0; i < 12; i++) {
+    out.push({
+      number: n,
+      planet: PLANET_MAP[n],
+      startDate: new Date(ad.startDate.getTime() + seg * i),
+      endDate: new Date(ad.startDate.getTime() + seg * (i + 1))
+    });
+    n = n === 9 ? 1 : n + 1;
+  }
+  
+  return out;
+}
+
 export function buildDailyDasha(pd: PratyantarEntry): DailyDashaEntry[] {
   const entries: DailyDashaEntry[] = [];
   const cur = new Date(pd.startDate);

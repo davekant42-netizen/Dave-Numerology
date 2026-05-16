@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import tailwindcssAnimate from "tailwindcss-animate";
 
 export default {
   darkMode: ["class"],
@@ -55,6 +56,10 @@ export default {
           DEFAULT: "hsl(var(--primary))",
           glow: "hsl(var(--gold-glow))",
         },
+        md: "hsl(var(--md-color))",
+        ad: "hsl(var(--ad-color))",
+        pd: "hsl(var(--pd-color))",
+        dd: "hsl(var(--dd-color))",
         "surface-elevated": "hsl(var(--surface-elevated))",
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
@@ -96,5 +101,5 @@ export default {
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [tailwindcssAnimate],
 } satisfies Config;

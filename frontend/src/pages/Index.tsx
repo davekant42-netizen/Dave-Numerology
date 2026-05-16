@@ -1,175 +1,243 @@
-import { useState, useMemo, useContext } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
-import NumerologySummary from '@/components/NumerologySummary';
-import VedicGrid from '@/components/VedicGrid';
-import DashaTable from '@/components/DashaTable';
-import { calculateMahadashas, calculateAntardashas, formatDateDMY, findCurrentStatus, PLANET_MAP } from '@/lib/numerology';
-import { AuthContext } from '@/context/AuthContext';
-
-const STUDENTS: Record<string, { name: string; dob: string }> = {};
+import { useState, useMemo, useEffect } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { CalendarIcon, Moon, Sun, LayoutGrid, List } from "lucide-react";
+import {
+  getRootNumber,
+  getDestinyNumber,
+  getWeekdayValue,
+  calculateMahadashas,
+  calculateAntardashas,
+  findCurrentStatus,
+  PLANET_MAP,
+} from "@/lib/numerology";
+import VedicGrid from "@/components/VedicGrid";
+import DashaTable from "@/components/DashaTable";
+import DashaGrid from "@/components/DashaGrid";
 
 const Index = () => {
-  const [searchParams] = useSearchParams();
-  const studentId = searchParams.get('student');
-  const student = studentId ? STUDENTS[studentId] : null;
+  const [dobInput, setDobInput] = useState("");
+  const [nameInput, setNameInput] = useState("");
+  const [dateObj, setDateObj] = useState<Date | null>(null);
+  
+  const [view, setView] = useState<'grid' | 'table'>('grid');
+  const [tab, setTab] = useState<'mahadasha' | 'yearly' | 'monthly' | 'daily'>('mahadasha');
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
 
-  const [nameInput, setNameInput] = useState(student?.name ?? '');
-  const [dobInput, setDobInput] = useState(student?.dob ?? '');
+  // Load theme on mount
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme') as 'dark' | 'light';
+    if (savedTheme) {
+      setTheme(savedTheme);
+      document.documentElement.classList.toggle('light', savedTheme === 'light');
+    }
+  }, []);
 
-  const { user, logout } = useContext(AuthContext);
+  const toggleTheme = () => {
+    const newTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+    document.documentElement.classList.toggle('light', newTheme === 'light');
+  };
 
-  const dob = useMemo(() => {
-    if (!dobInput) return null;
-    const d = new Date(dobInput + 'T00:00:00');
-    return isNaN(d.getTime()) ? null : d;
-  }, [dobInput]);
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setDobInput(val);
+    if (val) {
+      const parsed = new Date(val);
+      if (!isNaN(parsed.getTime())) {
+        // Adjust for timezone offset to prevent date shifting
+        const localDate = new Date(parsed.getTime() + parsed.getTimezoneOffset() * 60000);
+        setDateObj(localDate);
+      } else {
+        setDateObj(null);
+      }
+    } else {
+      setDateObj(null);
+    }
+  };
 
-  const mahadashas = useMemo(() => (dob ? calculateMahadashas(dob) : []),[dob]);
-  const antardashas = useMemo(() => (dob ? calculateAntardashas(dob) : []), [dob]);
-  const currentStatus = useMemo(() => (dob ? findCurrentStatus(dob, mahadashas, antardashas) : { md: undefined, ad: undefined, pd: undefined, todayDD: undefined }), [dob, mahadashas, antardashas]);
+  const calculations = useMemo(() => {
+    if (!dateObj) return null;
+    const rn = getRootNumber(dateObj);
+    const dn = getDestinyNumber(dateObj);
+    const wv = getWeekdayValue(dateObj);
+    
+    const mahadashas = calculateMahadashas(dateObj);
+    const antardashas = calculateAntardashas(dateObj);
+    const currentStatus = findCurrentStatus(dateObj, mahadashas, antardashas);
 
-  const today = new Date();
+    return { rn, dn, wv, mahadashas, antardashas, currentStatus };
+  }, [dateObj]);
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      <header className="border-b border-border px-4 sm:px-6 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-display font-bold text-primary tracking-tight">
-              DAVE Numerology
-            </h1>
-            <p className="text-xs text-muted-foreground">Precision 120-Year Dasha • Standalone</p>
+    <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
+      <header className="flex justify-between items-center px-6 py-4 border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
+        <h1 className="text-xl font-bold text-primary tracking-wide">DAVE NUMEROLOGY</h1>
+        
+        <div className="flex items-center gap-4">
+          <div className="flex bg-muted/50 rounded-lg p-1 border border-border">
+            <button 
+              onClick={() => setView('grid')}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${view === 'grid' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+            >
+              <LayoutGrid className="w-4 h-4" /> Grid
+            </button>
+            <button 
+              onClick={() => setView('table')}
+              className={`flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-all ${view === 'table' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+            >
+              <List className="w-4 h-4" /> Table
+            </button>
           </div>
           
-          <div className="flex items-center gap-4">
-            {student && (
-              <div className="text-right border-r border-border pr-4">
-                <p className="text-sm font-semibold text-foreground">{student.name}</p>
-                <p className="text-xs text-muted-foreground">Student</p>
-              </div>
-            )}
-            
-            <div className="text-right flex items-center gap-4">
-              <p className="text-sm text-muted-foreground">Welcome, <span className="font-semibold text-foreground">{user?.name}</span></p>
-              
-              {/* ADMIN DASHBOARD BUTTON */}
-              {user?.isAdmin && (
-                <Link 
-                  to="/admin"
-                  className="text-xs bg-primary text-primary-foreground px-3 py-1.5 rounded-md hover:opacity-90 transition-colors"
-                >
-                  Admin Dashboard
-                </Link>
-              )}
-
-               {/* NEW SETTINGS BUTTON */}
-                <Link to="/settings" className="text-xs bg-secondary text-secondary-foreground px-3 py-1.5 rounded-md hover:bg-secondary/80 transition-colors">
-                  Settings
-                </Link>
-
-              <button 
-                onClick={logout}
-                className="text-xs bg-secondary text-secondary-foreground px-3 py-1.5 rounded-md hover:bg-secondary/80 transition-colors"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
+          <Button variant="ghost" size="icon" onClick={toggleTheme} className="rounded-full">
+            {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          </Button>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-8">
-        {/* Inputs + Summary + Vedic Grid */}
-        <div className="flex flex-col lg:flex-row gap-6">
-          <div className="flex-1 space-y-6">
-            <div className="flex flex-wrap gap-6 items-start">
-              <div>
-                <label className="block text-[11px] uppercase tracking-[1.5px] text-muted-foreground mb-1.5">
-                  Name
-                </label>
-                <input
-                  type="text"
+      <main className="max-w-7xl mx-auto p-6 space-y-8 pb-20">
+        
+        {/* INPUT SECTION */}
+        <section className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+          <div className="md:col-span-5 bg-card border border-border rounded-xl p-6 shadow-sm">
+            <h2 className="text-sm font-semibold uppercase tracking-[2px] text-muted-foreground mb-6 flex items-center gap-2">
+              <CalendarIcon className="w-4 h-4" /> Enter Details
+            </h2>
+            
+            <div className="space-y-5">
+              <div className="space-y-2">
+                <label className="text-xs uppercase tracking-wider text-muted-foreground font-bold">Full Name (Optional)</label>
+                <Input 
+                  type="text" 
+                  placeholder="John Doe" 
                   value={nameInput}
-                  onChange={e => setNameInput(e.target.value)}
-                  placeholder="Enter name"
-                  className="bg-card border border-border rounded-md px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary w-56"
+                  onChange={(e) => setNameInput(e.target.value)}
+                  className="bg-background border-border text-lg h-12"
                 />
               </div>
-              <div>
-                <label className="block text-[11px] uppercase tracking-[1.5px] text-muted-foreground mb-1.5">
-                  Date of Birth
-                </label>
-                <input
-                  type="date"
+              
+              <div className="space-y-2">
+                <label className="text-xs uppercase tracking-wider text-muted-foreground font-bold">Date of Birth</label>
+                <Input 
+                  type="date" 
                   value={dobInput}
-                  onChange={e => setDobInput(e.target.value)}
-                  className="bg-card border border-border rounded-md px-3 py-2 font-mono text-sm text-foreground focus:outline-none focus:ring-1 focus:ring-primary"
+                  onChange={handleDateChange}
+                  className="bg-background border-border text-lg h-12 [color-scheme:dark]"
+                  style={theme === 'light' ? { colorScheme: 'light' } : {}}
                 />
               </div>
-              {dob && (
-                <div className="self-center mt-6">
-                  <p className="text-sm text-muted-foreground">
-                    {formatDateDMY(dob)} — {dob.toLocaleDateString('en', { weekday: 'long' })}
-                  </p>
-                </div>
-              )}
             </div>
-
-            {dob && (
-              <NumerologySummary dob={dob} name={nameInput} />
+          </div>
+          
+          {/* VEDIC GRID PREVIEW */}
+          <div className="md:col-span-7 bg-card border border-border rounded-xl p-6 shadow-sm flex items-center justify-center min-h-[250px]">
+            {!dateObj ? (
+              <div className="text-center text-muted-foreground">
+                <div className="w-16 h-16 mx-auto mb-4 border-2 border-dashed border-muted rounded-full flex items-center justify-center">
+                  <LayoutGrid className="w-6 h-6 text-muted" />
+                </div>
+                <p>Enter your Date of Birth to generate the Vedic Grid.</p>
+              </div>
+            ) : calculations && (
+              <div className="flex flex-col md:flex-row gap-8 items-center justify-center w-full animate-in fade-in zoom-in-95 duration-500">
+                <VedicGrid dob={dateObj} currentStatus={calculations.currentStatus} />
+                
+                <div className="flex flex-col gap-3 min-w-[200px]">
+                  {calculations.currentStatus.md && (
+                    <div className="flex justify-between items-center px-3 py-2 rounded-md border" style={{ backgroundColor: 'hsl(var(--md-color)/0.1)', borderColor: 'hsl(var(--md-color)/0.2)' }}>
+                      <span className="text-xs font-bold uppercase tracking-wider" style={{ color: 'hsl(var(--md-color))' }}>MD</span>
+                      <span className="font-mono text-sm font-bold" style={{ color: 'hsl(var(--md-color))' }}>{calculations.currentStatus.md.number} • {PLANET_MAP[calculations.currentStatus.md.number]}</span>
+                    </div>
+                  )}
+                  {calculations.currentStatus.ad && (
+                    <div className="flex justify-between items-center px-3 py-2 rounded-md border" style={{ backgroundColor: 'hsl(var(--ad-color)/0.1)', borderColor: 'hsl(var(--ad-color)/0.2)' }}>
+                      <span className="text-xs font-bold uppercase tracking-wider" style={{ color: 'hsl(var(--ad-color))' }}>AD</span>
+                      <span className="font-mono text-sm font-bold" style={{ color: 'hsl(var(--ad-color))' }}>{calculations.currentStatus.ad.number} • {PLANET_MAP[calculations.currentStatus.ad.number]}</span>
+                    </div>
+                  )}
+                  {calculations.currentStatus.pd && (
+                    <div className="flex justify-between items-center px-3 py-2 rounded-md border" style={{ backgroundColor: 'hsl(var(--pd-color)/0.1)', borderColor: 'hsl(var(--pd-color)/0.2)' }}>
+                      <span className="text-xs font-bold uppercase tracking-wider" style={{ color: 'hsl(var(--pd-color))' }}>PD</span>
+                      <span className="font-mono text-sm font-bold" style={{ color: 'hsl(var(--pd-color))' }}>{calculations.currentStatus.pd.number} • {PLANET_MAP[calculations.currentStatus.pd.number]}</span>
+                    </div>
+                  )}
+                  {calculations.currentStatus.todayDD && (
+                    <div className="flex justify-between items-center px-3 py-2 rounded-md border" style={{ backgroundColor: 'hsl(var(--dd-color)/0.1)', borderColor: 'hsl(var(--dd-color)/0.2)' }}>
+                      <span className="text-xs font-bold uppercase tracking-wider" style={{ color: 'hsl(var(--dd-color))' }}>DD</span>
+                      <span className="font-mono text-sm font-bold" style={{ color: 'hsl(var(--dd-color))' }}>{calculations.currentStatus.todayDD} • {PLANET_MAP[calculations.currentStatus.todayDD]}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
             )}
           </div>
+        </section>
 
-          {dob && (
-            <div className="shrink-0 bg-card border border-border rounded-lg p-4">
-              <p className="text-[11px] uppercase tracking-[1.5px] text-muted-foreground mb-2">Vedic Grid</p>
-              <VedicGrid dob={dob} currentStatus={currentStatus} />
-            </div>
-          )}
-        </div>
-
-        {dob && (
-          <>
-            {currentStatus.md && (
-              <section>
-                <h2 className="text-xs uppercase tracking-[2px] text-muted-foreground mb-3">
-                  Current Status — {formatDateDMY(today)}
-                </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                  <div className="rounded-md bg-red-500/10 border border-red-500/40 p-3 text-red-500">
-                    <div className="text-[11px] uppercase tracking-widest opacity-80">Mahadasha</div>
-                    <div className="text-lg font-bold mt-0.5">{currentStatus.md.number} — {currentStatus.md.planet}</div>
-                  </div>
-                  {currentStatus.ad && (
-                    <div className="rounded-md bg-blue-500/10 border border-blue-500/40 p-3 text-blue-500">
-                      <div className="text-[11px] uppercase tracking-widest opacity-80">Antardasha</div>
-                      <div className="text-lg font-bold mt-0.5">{currentStatus.ad.number} — {currentStatus.ad.planet}</div>
-                    </div>
-                  )}
-                  {currentStatus.pd && (
-                    <div className="rounded-md bg-green-500/10 border border-green-500/40 p-3 text-emerald-500">
-                      <div className="text-[11px] uppercase tracking-widest opacity-80">Pratyantar</div>
-                      <div className="text-lg font-bold mt-0.5">{currentStatus.pd.number} — {currentStatus.pd.planet}</div>
-                    </div>
-                  )}
-                  {currentStatus.todayDD && (
-                    <div className="rounded-md bg-amber-500/10 border border-amber-500/40 p-3 text-amber-500">
-                      <div className="text-[11px] uppercase tracking-widest opacity-80">Daily Dasha</div>
-                      <div className="text-lg font-bold mt-0.5">{currentStatus.todayDD} — {PLANET_MAP[currentStatus.todayDD]}</div>
-                      <div className="text-[10px] opacity-80 mt-0.5">{today.toLocaleDateString('en', { weekday: 'long' })} • {formatDateDMY(today)}</div>
-                    </div>
-                  )}
+        {dateObj && calculations && (
+          <div className="space-y-8 animate-in slide-in-from-bottom-4 duration-700">
+            
+            {/* CORE NUMBERS */}
+            <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="bg-card border border-border rounded-xl p-5 shadow-sm relative overflow-hidden group">
+                <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">Name</div>
+                <div className="text-2xl font-bold truncate">{nameInput || '—'}</div>
+              </div>
+              <div className="bg-card border border-border rounded-xl p-5 shadow-[0_0_20px_-5px_hsl(var(--gold-glow)/0.3)] relative overflow-hidden group">
+                <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">Root Number</div>
+                <div className="flex items-baseline gap-2">
+                  <div className="text-4xl font-bold text-primary">{calculations.rn}</div>
+                  <div className="text-sm text-muted-foreground">Day {dateObj.getDate()} → {PLANET_MAP[calculations.rn]}</div>
                 </div>
+              </div>
+              <div className="bg-card border border-border rounded-xl p-5 shadow-[0_0_20px_-5px_hsl(var(--gold-glow)/0.3)] relative overflow-hidden group">
+                <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">Destiny Number</div>
+                <div className="flex items-baseline gap-2">
+                  <div className="text-4xl font-bold text-primary">{calculations.dn}</div>
+                  <div className="text-sm text-muted-foreground">{PLANET_MAP[calculations.dn]}</div>
+                </div>
+              </div>
+              <div className="bg-card border border-border rounded-xl p-5 shadow-[0_0_20px_-5px_hsl(var(--gold-glow)/0.3)] relative overflow-hidden group">
+                <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-1">DOB Weekday</div>
+                <div className="flex items-baseline gap-2">
+                  <div className="text-4xl font-bold text-primary">{calculations.wv}</div>
+                  <div className="text-sm text-muted-foreground">{dateObj.toLocaleDateString('en',{weekday:'long'})} → {PLANET_MAP[calculations.wv]}</div>
+                </div>
+              </div>
+            </section>
+
+            {/* VIEWS */}
+            {view === 'grid' ? (
+              <section className="space-y-6">
+                <div className="flex items-center gap-2 border-b border-border pb-2 overflow-x-auto no-scrollbar">
+                  {['mahadasha', 'yearly', 'monthly', 'daily'].map((t) => (
+                    <button
+                      key={t}
+                      onClick={() => setTab(t as any)}
+                      className={`px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wider transition-colors whitespace-nowrap ${tab === t ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}
+                    >
+                      {t}
+                    </button>
+                  ))}
+                </div>
+                
+                <DashaGrid 
+                  dob={dateObj}
+                  tab={tab}
+                  mahadashas={calculations.mahadashas}
+                  antardashas={calculations.antardashas}
+                  currentStatus={calculations.currentStatus}
+                />
               </section>
+            ) : (
+              <DashaTable 
+                mahadashas={calculations.mahadashas}
+                antardashas={calculations.antardashas}
+                currentStatus={calculations.currentStatus}
+              />
             )}
-
-            <DashaTable dob={dob} mahadashas={mahadashas} antardashas={antardashas} />
-          </>
-        )}
-
-        {!dob && (
-          <div className="flex items-center justify-center py-32">
-            <p className="text-muted-foreground text-lg">Enter Name & Date of Birth to begin analysis</p>
           </div>
         )}
       </main>
