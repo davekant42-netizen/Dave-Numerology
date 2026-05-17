@@ -160,7 +160,7 @@ const VedicGrid = ({ dob, mahadashas, antardashas, customNumbers, small, current
       {/* Legend - Only show if not small */}
       {!small && (
         <div className="mt-3 flex flex-wrap gap-2 text-[10px]">
-          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-white font-semibold bg-orange-500 shadow-sm">
+          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-black font-extrabold bg-orange-500 shadow-sm">
             Birth Number
           </span>
           {(mdNum || adNum || pdNum || ddNum) && BADGES.map(b => {
