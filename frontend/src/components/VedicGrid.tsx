@@ -146,9 +146,12 @@ const VedicGrid = ({ dob, mahadashas, antardashas, customNumbers, small, current
       </div>
 
       {/* Legend - Only show if not small */}
-      {!small && (mdNum || adNum || pdNum || ddNum) && (
+      {!small && (
         <div className="mt-3 flex flex-wrap gap-2 text-[10px]">
-          {BADGES.map(b => {
+          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-white font-semibold bg-orange-500 shadow-sm">
+            Birth Number
+          </span>
+          {(mdNum || adNum || pdNum || ddNum) && BADGES.map(b => {
             const n = { md: mdNum, ad: adNum, pd: pdNum, dd: ddNum }[b.key];
             if (n == null) return null;
             return (

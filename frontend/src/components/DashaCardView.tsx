@@ -468,6 +468,10 @@ const Legend = () => (
     <Dot c="ad" label="AD" />
     <Dot c="pd" label="PD" />
     <Dot c="dd" label="DD" />
+    <span className="inline-flex items-center gap-1.5 text-[11px] text-muted-foreground">
+      <span className="h-2 w-2 rounded-full bg-orange-500" />
+      Birth Number
+    </span>
   </div>
 );
 
