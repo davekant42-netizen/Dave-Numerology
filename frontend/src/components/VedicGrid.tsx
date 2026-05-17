@@ -104,20 +104,30 @@ const VedicGrid = ({ dob, mahadashas, antardashas, customNumbers, small, current
           return (
             <div
               key={i}
-              style={cellStyle}
-              className={`relative ${small ? 'w-10 h-10 text-[10px]' : 'w-16 h-16 text-sm'} flex items-center justify-center rounded-md border text-center font-mono font-bold transition-colors ${
-                hasPeriod
-                  ? ''
-                  : active
-                    ? 'bg-primary/20 border-primary text-primary shadow-[0_0_12px_hsl(var(--primary)/0.3)]'
-                    : 'bg-card border-border text-muted-foreground/40'
-              }`}
+              className={`relative ${small ? 'w-10 h-10' : 'w-16 h-16'} flex items-center justify-center rounded-md border border-border bg-card/60 backdrop-blur-sm`}
             >
-              {active ? Array(count).fill(digit).join(',') : digit}
+              {active || hasPeriod ? (
+                <div
+                  style={cellStyle}
+                  className={`flex items-center justify-center rounded-full font-mono font-bold transition-all ${
+                    small ? 'w-7 h-7 text-[9px]' : 'w-12 h-12 text-sm'
+                  } ${
+                    hasPeriod
+                      ? 'border'
+                      : 'bg-primary/20 border border-primary text-primary shadow-[0_0_12px_hsl(var(--primary)/0.3)]'
+                  }`}
+                >
+                  {active ? Array(count).fill(digit).join(',') : digit}
+                </div>
+              ) : (
+                <span className={`font-mono font-bold text-muted-foreground/30 ${small ? 'text-[10px]' : 'text-sm'}`}>
+                  {digit}
+                </span>
+              )}
 
               {/* Period badges */}
               {periods.length > 0 && (
-                <div className={`absolute ${small ? '-top-1 -right-1' : '-top-1.5 -right-1.5'} flex flex-col gap-0.5`}>
+                <div className={`absolute ${small ? '-top-1 -right-1' : '-top-1.5 -right-1.5'} flex flex-col gap-0.5 z-10`}>
                   {periods.map(p => (
                     <span
                       key={p}
