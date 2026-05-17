@@ -41,7 +41,7 @@ const Index = () => {
         <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 flex-wrap sm:flex-nowrap">
           <div>
             <h1 className="text-xl font-display font-bold text-primary tracking-tight">
-              DAVE Numerology
+              Dave Numerology [N]
             </h1>
             <p className="text-xs text-muted-foreground">Precision calculations • 120-Year Dasha</p>
           </div>
