@@ -78,7 +78,9 @@ const PeriodBadgeStack = ({ periods }: { periods: PeriodKey[] }) => {
       {badgePeriods.map(p => (
         <span
           key={p}
-          className="min-w-[18px] h-[13px] px-1 rounded-full text-[8px] font-bold text-white flex items-center justify-center shadow"
+          className={`min-w-[18px] h-[13px] px-1 rounded-full text-[8px] font-bold flex items-center justify-center shadow ${
+            p === 'dd' ? 'text-black font-extrabold' : 'text-white'
+          }`}
           style={{ backgroundColor: getPeriodColor(p) }}
         >
           {p.toUpperCase()}
