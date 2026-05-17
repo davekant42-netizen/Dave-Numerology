@@ -202,65 +202,67 @@ const VedicGrid = ({ dob, mahadashas, antardashas, customNumbers, small, current
 
       {/* Showcase on the right side of the main grid (if not small) */}
       {!small && (
-        <div className="flex-grow min-w-[220px] bg-card/40 border border-border/80 rounded-xl p-4 flex flex-col justify-center gap-3">
+        <div className="flex-grow min-w-[320px] bg-card/40 border border-border/80 rounded-xl p-4 flex flex-col justify-center gap-3">
           <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/80 border-b border-border/50 pb-1.5">
             Active Dasha Periods
           </h3>
           <div className="space-y-3">
             {dob && (() => {
-              const bnNum = getRootNumber(dob);
+              const activeDigits = GRID.flat().filter(digit => (counts[digit] || 0) > 0).sort();
+              const bnNumText = activeDigits.join(', ');
+              const bnPlanetText = activeDigits.map(n => PLANET_MAP[n]).join(', ');
               return (
-                <div className="flex items-center justify-between text-xs py-2 border-b border-border/30">
+                <div className="grid grid-cols-[auto_1fr] items-baseline gap-x-8 py-2 border-b border-border/30 text-xs">
                   <span className="font-semibold text-muted-foreground flex items-center gap-3">
-                    <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: 'rgb(249,115,22)' }} />
-                    Birth Number (BN)
+                    <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: 'rgb(249,115,22)' }} />
+                    Birth Numbers (BN)
                   </span>
-                  <span className="font-mono font-bold text-foreground">
-                    {bnNum} - {PLANET_MAP[bnNum]}
+                  <span className="font-mono font-bold text-foreground text-right justify-self-end break-words max-w-[180px]">
+                    {bnNumText} - {bnPlanetText}
                   </span>
                 </div>
               );
             })()}
             {mdNum != null && (
-              <div className="flex items-center justify-between text-xs py-2 border-b border-border/30">
+              <div className="grid grid-cols-[auto_1fr] items-baseline gap-x-8 py-2 border-b border-border/30 text-xs">
                 <span className="font-semibold text-muted-foreground flex items-center gap-3">
-                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: 'hsl(var(--md-color))' }} />
+                  <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: 'hsl(var(--md-color))' }} />
                   Maha Dasha (MD)
                 </span>
-                <span className="font-mono font-bold text-foreground">
+                <span className="font-mono font-bold text-foreground text-right justify-self-end">
                   {mdNum} - {PLANET_MAP[mdNum]}
                 </span>
               </div>
             )}
             {adNum != null && (
-              <div className="flex items-center justify-between text-xs py-2 border-b border-border/30">
+              <div className="grid grid-cols-[auto_1fr] items-baseline gap-x-8 py-2 border-b border-border/30 text-xs">
                 <span className="font-semibold text-muted-foreground flex items-center gap-3">
-                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: 'hsl(var(--ad-color))' }} />
+                  <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: 'hsl(var(--ad-color))' }} />
                   Antar Dasha (AD)
                 </span>
-                <span className="font-mono font-bold text-foreground">
+                <span className="font-mono font-bold text-foreground text-right justify-self-end">
                   {adNum} - {PLANET_MAP[adNum]}
                 </span>
               </div>
             )}
             {pdNum != null && (
-              <div className="flex items-center justify-between text-xs py-2 border-b border-border/30">
+              <div className="grid grid-cols-[auto_1fr] items-baseline gap-x-8 py-2 border-b border-border/30 text-xs">
                 <span className="font-semibold text-muted-foreground flex items-center gap-3">
-                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: 'hsl(var(--pd-color))' }} />
+                  <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: 'hsl(var(--pd-color))' }} />
                   Pratyantar Dasha (PD)
                 </span>
-                <span className="font-mono font-bold text-foreground">
+                <span className="font-mono font-bold text-foreground text-right justify-self-end">
                   {pdNum} - {PLANET_MAP[pdNum]}
                 </span>
               </div>
             )}
             {ddNum != null && (
-              <div className="flex items-center justify-between text-xs py-2 border-b border-border/30">
+              <div className="grid grid-cols-[auto_1fr] items-baseline gap-x-8 py-2 border-b border-border/30 text-xs">
                 <span className="font-semibold text-muted-foreground flex items-center gap-3">
-                  <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: 'hsl(var(--dd-color))' }} />
+                  <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: 'hsl(var(--dd-color))' }} />
                   Daily Dasha (DD)
                 </span>
-                <span className="font-mono font-bold text-foreground">
+                <span className="font-mono font-bold text-foreground text-right justify-self-end">
                   {ddNum} - {PLANET_MAP[ddNum]}
                 </span>
               </div>
