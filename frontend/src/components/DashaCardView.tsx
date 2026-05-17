@@ -71,10 +71,11 @@ function periodCellStyle(periods: PeriodKey[]): React.CSSProperties | undefined 
 }
 
 const PeriodBadgeStack = ({ periods }: { periods: PeriodKey[] }) => {
-  if (!periods.length) return null;
+  const badgePeriods = periods.filter(p => p !== 'bn');
+  if (!badgePeriods.length) return null;
   return (
     <div className="absolute -top-1.5 -right-1.5 flex flex-col gap-0.5 z-10">
-      {periods.map(p => (
+      {badgePeriods.map(p => (
         <span
           key={p}
           className="min-w-[18px] h-[13px] px-1 rounded-full text-[8px] font-bold text-white flex items-center justify-center shadow"

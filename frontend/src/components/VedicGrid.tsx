@@ -138,12 +138,12 @@ const VedicGrid = ({ dob, mahadashas, antardashas, customNumbers, small, current
               )}
 
               {/* Period badges */}
-              {displayPeriods.length > 0 && (
+              {displayPeriods.filter(p => p !== 'bn').length > 0 && (
                 <div className={`absolute ${small ? '-top-1 -right-1' : '-top-1.5 -right-1.5'} flex flex-col gap-0.5 z-10`}>
-                  {displayPeriods.map(p => (
+                  {displayPeriods.filter(p => p !== 'bn').map(p => (
                     <span
                       key={p}
-                      title={`${p.toUpperCase()} ${digit} • ${p === 'bn' ? 'Birth Number' : PLANET_MAP[digit]}`}
+                      title={`${p.toUpperCase()} ${digit} • ${PLANET_MAP[digit]}`}
                       className={`${small ? 'min-w-[12px] h-[10px] px-0.5 text-[6px]' : 'min-w-[20px] h-[14px] px-1 text-[8px]'} rounded-full font-bold text-white flex items-center justify-center shadow`}
                       style={{ backgroundColor: getPeriodColor(p) }}
                     >

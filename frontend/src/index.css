@@ -45,7 +45,7 @@
     --md-color: 0 75% 58%;       /* MD red */
     --ad-color: 265 75% 65%;     /* AD purple */
     --pd-color: 145 60% 48%;     /* PD green */
-    --dd-color: 38 95% 55%;      /* DD gold */
+    --dd-color: 65 95% 55%;      /* DD lime yellow */
 
     --sidebar-background: 220 20% 7%;
     --sidebar-foreground: 40 20% 90%;
@@ -97,7 +97,7 @@
     --md-color: 0 75% 55%;
     --ad-color: 265 70% 58%;
     --pd-color: 145 55% 42%;
-    --dd-color: 38 90% 50%;
+    --dd-color: 65 95% 45%;
 
     --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 222 30% 18%;
