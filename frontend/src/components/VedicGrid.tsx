@@ -114,7 +114,7 @@ const VedicGrid = ({ dob, mahadashas, antardashas, customNumbers, small, current
                   } ${
                     hasPeriod
                       ? 'border'
-                      : 'bg-white/10 border border-white text-white shadow-[0_0_12px_rgba(255,255,255,0.25)]'
+                      : 'bg-orange-500/20 border border-orange-500 text-orange-400 shadow-[0_0_12px_rgba(249,115,22,0.35)]'
                   }`}
                 >
                   {active ? Array(count).fill(digit).join(',') : digit}
