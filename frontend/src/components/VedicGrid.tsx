@@ -144,9 +144,7 @@ const VedicGrid = ({ dob, mahadashas, antardashas, customNumbers, small, current
                     <span
                       key={p}
                       title={`${p.toUpperCase()} ${digit} • ${PLANET_MAP[digit]}`}
-                      className={`${small ? 'min-w-[12px] h-[10px] px-0.5 text-[6px]' : 'min-w-[20px] h-[14px] px-1 text-[8px]'} rounded-full font-bold flex items-center justify-center shadow ${
-                        p === 'dd' ? 'text-black font-extrabold' : 'text-white'
-                      }`}
+                      className={`${small ? 'min-w-[12px] h-[10px] px-0.5 text-[6px]' : 'min-w-[20px] h-[14px] px-1 text-[8px]'} rounded-full font-extrabold text-black flex items-center justify-center shadow`}
                       style={{ backgroundColor: getPeriodColor(p) }}
                     >
                       {p.toUpperCase()}
@@ -171,9 +169,7 @@ const VedicGrid = ({ dob, mahadashas, antardashas, customNumbers, small, current
             return (
               <span
                 key={b.key}
-                className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded font-semibold ${
-                  b.key === 'dd' ? 'text-black font-extrabold' : 'text-white'
-                }`}
+                className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-black font-extrabold shadow-sm"
                 style={{ backgroundColor: `hsl(var(--${b.key}-color))` }}
               >
                 {b.label} {n} • {PLANET_MAP[n]}
