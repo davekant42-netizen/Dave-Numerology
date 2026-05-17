@@ -23,7 +23,7 @@ const Index = () => {
   const [nameInput, setNameInput] = useState(student?.name ?? '');
   const [dobInput, setDobInput] = useState(student?.dob ?? '');
   const [showPrediction, setShowPrediction] = useState(false);
-  const [dashaView, setDashaView] = useState<'grid' | 'table'>('grid');
+  const [dashaView, setDashaView] = useState<'grid' | 'table'>('table');
   const { theme, toggle } = useTheme();
 
   const dob = useMemo(() => {
@@ -81,7 +81,7 @@ const Index = () => {
             </div>
 
             <div className="flex items-center gap-3 border-l border-border pl-4">
-              {dob && (
+              {/* {dob && (
                 <ToggleGroup
                   type="single"
                   value={dashaView}
@@ -95,7 +95,7 @@ const Index = () => {
                     Table
                   </ToggleGroupItem>
                 </ToggleGroup>
-              )}
+              )} */}
 
               {dob && (
                 <button
