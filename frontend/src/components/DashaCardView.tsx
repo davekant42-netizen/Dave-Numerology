@@ -102,16 +102,24 @@ const VedicMiniGrid = ({
           return (
             <div
               key={i}
-              className={`relative aspect-square flex items-center justify-center rounded-md border text-center font-mono text-sm font-bold transition-colors ${
-                hasPeriodColor
-                  ? ''
-                  : active
-                  ? 'bg-primary/20 border-primary text-primary shadow-[0_0_12px_hsl(var(--primary)/0.3)]'
-                  : 'bg-card border-border text-muted-foreground/40'
-              }`}
-              style={periodCellStyle(badges, active)}
+              className="relative aspect-square flex items-center justify-center rounded-md border border-border bg-card/60 backdrop-blur-sm"
             >
-              {active ? Array(count).fill(digit).join(',') : digit}
+              {active || hasPeriodColor ? (
+                <div
+                  style={periodCellStyle(badges, active)}
+                  className={`flex items-center justify-center rounded-full font-mono font-bold transition-all w-[80%] h-[80%] aspect-square text-xs ${
+                    hasPeriodColor
+                      ? 'border'
+                      : 'bg-primary/20 border border-primary text-primary shadow-[0_0_12px_hsl(var(--primary)/0.3)]'
+                  }`}
+                >
+                  {active ? Array(count).fill(digit).join(',') : digit}
+                </div>
+              ) : (
+                <span className="font-mono font-bold text-muted-foreground/30 text-xs">
+                  {digit}
+                </span>
+              )}
               <PeriodBadgeStack periods={badges} />
             </div>
           );
