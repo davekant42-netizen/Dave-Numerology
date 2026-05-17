@@ -148,7 +148,7 @@ const VedicGrid = ({ dob, mahadashas, antardashas, customNumbers, small, current
 
                 {/* Period badges */}
                 {displayPeriods.filter(p => p !== 'bn').length > 0 && (
-                  <div className={`absolute ${small ? '-top-1 -right-1' : '-top-1.5 -right-1.5'} flex flex-col gap-0.5 z-10`}>
+                  <div className={`absolute ${small ? '-top-1 -right-1' : '-top-1.5 -right-1.5'} flex flex-col gap-1 z-10`}>
                     {displayPeriods.filter(p => p !== 'bn').map(p => (
                       <span
                         key={p}
@@ -206,10 +206,24 @@ const VedicGrid = ({ dob, mahadashas, antardashas, customNumbers, small, current
           <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/80 border-b border-border/50 pb-1.5">
             Active Dasha Periods
           </h3>
-          <div className="space-y-2">
+          <div className="space-y-3">
+            {dob && (() => {
+              const bnNum = getRootNumber(dob);
+              return (
+                <div className="flex items-center justify-between text-xs py-2 border-b border-border/30">
+                  <span className="font-semibold text-muted-foreground flex items-center gap-3">
+                    <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: 'rgb(249,115,22)' }} />
+                    Birth Number (BN)
+                  </span>
+                  <span className="font-mono font-bold text-foreground">
+                    {bnNum} - {PLANET_MAP[bnNum]}
+                  </span>
+                </div>
+              );
+            })()}
             {mdNum != null && (
-              <div className="flex items-center justify-between text-xs py-1 border-b border-border/30">
-                <span className="font-semibold text-muted-foreground flex items-center gap-1.5">
+              <div className="flex items-center justify-between text-xs py-2 border-b border-border/30">
+                <span className="font-semibold text-muted-foreground flex items-center gap-3">
                   <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: 'hsl(var(--md-color))' }} />
                   Maha Dasha (MD)
                 </span>
@@ -219,8 +233,8 @@ const VedicGrid = ({ dob, mahadashas, antardashas, customNumbers, small, current
               </div>
             )}
             {adNum != null && (
-              <div className="flex items-center justify-between text-xs py-1 border-b border-border/30">
-                <span className="font-semibold text-muted-foreground flex items-center gap-1.5">
+              <div className="flex items-center justify-between text-xs py-2 border-b border-border/30">
+                <span className="font-semibold text-muted-foreground flex items-center gap-3">
                   <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: 'hsl(var(--ad-color))' }} />
                   Antar Dasha (AD)
                 </span>
@@ -230,8 +244,8 @@ const VedicGrid = ({ dob, mahadashas, antardashas, customNumbers, small, current
               </div>
             )}
             {pdNum != null && (
-              <div className="flex items-center justify-between text-xs py-1 border-b border-border/30">
-                <span className="font-semibold text-muted-foreground flex items-center gap-1.5">
+              <div className="flex items-center justify-between text-xs py-2 border-b border-border/30">
+                <span className="font-semibold text-muted-foreground flex items-center gap-3">
                   <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: 'hsl(var(--pd-color))' }} />
                   Pratyantar Dasha (PD)
                 </span>
@@ -241,8 +255,8 @@ const VedicGrid = ({ dob, mahadashas, antardashas, customNumbers, small, current
               </div>
             )}
             {ddNum != null && (
-              <div className="flex items-center justify-between text-xs py-1 border-b border-border/30">
-                <span className="font-semibold text-muted-foreground flex items-center gap-1.5">
+              <div className="flex items-center justify-between text-xs py-2 border-b border-border/30">
+                <span className="font-semibold text-muted-foreground flex items-center gap-3">
                   <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: 'hsl(var(--dd-color))' }} />
                   Daily Dasha (DD)
                 </span>

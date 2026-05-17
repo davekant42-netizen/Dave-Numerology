@@ -74,7 +74,7 @@ const PeriodBadgeStack = ({ periods }: { periods: PeriodKey[] }) => {
   const badgePeriods = periods.filter(p => p !== 'bn');
   if (!badgePeriods.length) return null;
   return (
-    <div className="absolute -top-1.5 -right-1.5 flex flex-col gap-0.5 z-10">
+    <div className="absolute -top-1.5 -right-1.5 flex flex-col gap-1 z-10">
       {badgePeriods.map(p => (
         <span
           key={p}
