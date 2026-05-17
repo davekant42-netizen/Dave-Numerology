@@ -170,31 +170,31 @@ const VedicGrid = ({ dob, mahadashas, antardashas, customNumbers, small, current
         {!small && (
           <div className="mt-3 flex flex-wrap gap-2 text-[10px]">
             <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-black font-extrabold bg-orange-500 shadow-sm">
-              Birth Number
+              BN
             </span>
             <span
               className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-black font-extrabold shadow-sm bg-red-500"
               style={{ backgroundColor: 'hsl(var(--md-color))' }}
             >
-              Maha Dasha
+              MD
             </span>
             <span
               className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-black font-extrabold shadow-sm bg-purple-500"
               style={{ backgroundColor: 'hsl(var(--ad-color))' }}
             >
-              Antar Dasha
+              AD
             </span>
             <span
               className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-black font-extrabold shadow-sm bg-green-500"
               style={{ backgroundColor: 'hsl(var(--pd-color))' }}
             >
-              Pratyantar Dasha
+              PD
             </span>
             <span
               className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-black font-extrabold shadow-sm bg-yellow-500"
               style={{ backgroundColor: 'hsl(var(--dd-color))' }}
             >
-              Daily Dasha
+              DD
             </span>
           </div>
         )}
