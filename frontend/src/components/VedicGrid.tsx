@@ -94,7 +94,7 @@ const VedicGrid = ({ dob, mahadashas, antardashas, customNumbers, small, current
               const p = displayPeriods[0];
               const c = getPeriodColor(p);
               cellStyle = {
-                background: getPeriodBgColor(p, small ? '0.22' : '0.28'),
+                background: getPeriodBgColor(p, small ? '0.38' : '0.42'),
                 borderColor: c,
                 color: p === 'bn' ? '#fb923c' : c,
                 boxShadow: small ? undefined : `0 0 12px ${p === 'bn' ? 'rgba(249,115,22,0.35)' : `hsl(var(--${p}-color) / 0.35)`}`,
@@ -104,15 +104,15 @@ const VedicGrid = ({ dob, mahadashas, antardashas, customNumbers, small, current
                 .map((p, idx) => {
                   const start = (idx * 100) / displayPeriods.length;
                   const end = ((idx + 1) * 100) / displayPeriods.length;
-                  const bg = getPeriodBgColor(p, '0.28');
+                  const bg = getPeriodBgColor(p, '0.52');
                   return `${bg} ${start}%, ${bg} ${end}%`;
                 })
                 .join(', ');
               cellStyle = {
                 background: `linear-gradient(135deg, ${stops})`,
                 borderColor: getPeriodColor(displayPeriods[0]),
-                color: 'hsl(var(--foreground))',
-                boxShadow: small ? undefined : `0 0 12px ${displayPeriods[0] === 'bn' ? 'rgba(249,115,22,0.3)' : `hsl(var(--${displayPeriods[0]}-color) / 0.3)`}`,
+                color: '#ffffff',
+                boxShadow: small ? undefined : `0 0 12px ${displayPeriods[0] === 'bn' ? 'rgba(249,115,22,0.4)' : `hsl(var(--${displayPeriods[0]}-color) / 0.4)`}`,
               };
             }
           }

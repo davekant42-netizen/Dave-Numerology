@@ -49,7 +49,8 @@ function matchingPeriodsFor(
 function periodCellStyle(periods: PeriodKey[]): React.CSSProperties | undefined {
   if (!periods.length) return undefined;
 
-  const baseOpacity = 0.28;
+  const isMulti = periods.length > 1;
+  const baseOpacity = isMulti ? 0.52 : 0.42;
   const background =
     periods.length === 1
       ? getPeriodBgColor(periods[0], baseOpacity)
@@ -64,8 +65,8 @@ function periodCellStyle(periods: PeriodKey[]): React.CSSProperties | undefined 
   return {
     background,
     borderColor: getPeriodColor(periods[0]),
-    color: periods[0] === 'bn' ? '#fb923c' : getPeriodColor(periods[0]),
-    boxShadow: `0 0 12px ${periods[0] === 'bn' ? 'rgba(249,115,22,0.35)' : `hsl(var(--${periods[0]}-color) / 0.35)`}`,
+    color: isMulti ? '#ffffff' : (periods[0] === 'bn' ? '#fb923c' : getPeriodColor(periods[0])),
+    boxShadow: `0 0 12px ${periods[0] === 'bn' ? 'rgba(249,115,22,0.4)' : `hsl(var(--${periods[0]}-color) / 0.4)`}`,
   };
 }
 
