@@ -191,7 +191,7 @@ const Card = ({
     }
   >
     <div
-      className={`px-4 py-2.5 flex items-center justify-between ${active ? 'text-white' : 'bg-secondary/50 text-foreground'}`}
+      className={`px-3 py-1.5 flex items-center justify-between ${active ? 'text-white' : 'bg-secondary/50 text-foreground'}`}
       style={active ? { backgroundColor: `hsl(var(--${accent}-color))` } : undefined}
     >
       <div className="font-semibold text-sm tracking-tight">{title}</div>
@@ -199,7 +199,7 @@ const Card = ({
         <div className={`text-[11px] font-mono ${active ? 'text-white/85' : 'text-muted-foreground'}`}>{subtitle}</div>
       )}
     </div>
-    <div className="p-4">{children}</div>
+    <div className="p-3">{children}</div>
   </div>
 );
 
@@ -295,7 +295,7 @@ const MahadashaGrid = ({ dob, mahadashas, antardashas }: Props) => {
   const now = NOW();
   const periods = useCurrentPeriodNumbers(dob, mahadashas, antardashas);
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
       {mahadashas.map((m, i) => {
         const isActive = now >= m.startDate.getTime() && now < m.endDate.getTime();
         const ads = antardashas.filter(
@@ -331,7 +331,7 @@ const YearlyGrid = ({ dob, mahadashas, antardashas }: Props) => {
   const now = NOW();
   const periods = useCurrentPeriodNumbers(dob, mahadashas, antardashas);
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
       {antardashas.map((a, i) => {
         const isActive = now >= a.startDate.getTime() && now < a.endDate.getTime();
         const pds = calculatePratyantars(a.number, a.startDate);
@@ -360,7 +360,7 @@ const MonthlyGrid = ({ dob, mahadashas, antardashas }: Props) => {
   const now = NOW();
   const periods = useCurrentPeriodNumbers(dob, mahadashas, antardashas);
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
       {antardashas.map((a, i) => {
         const isActive = now >= a.startDate.getTime() && now < a.endDate.getTime();
         const months = buildMonths(a);
@@ -389,7 +389,7 @@ const DailyGrid = ({ dob, mahadashas, antardashas }: Props) => {
   const now = NOW();
   const periods = useCurrentPeriodNumbers(dob, mahadashas, antardashas);
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
       {antardashas.map((a, i) => {
         const isActive = now >= a.startDate.getTime() && now < a.endDate.getTime();
         const pds = calculatePratyantars(a.number, a.startDate);
@@ -481,7 +481,7 @@ const Legend = () => (
     <Dot c="dd" label="DD" />
     <span className="inline-flex items-center gap-1.5 text-[11px] text-muted-foreground">
       <span className="h-2 w-2 rounded-full bg-orange-500" />
-      Birth Number
+      BN
     </span>
   </div>
 );
