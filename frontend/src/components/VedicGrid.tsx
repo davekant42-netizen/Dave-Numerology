@@ -27,6 +27,16 @@ const BADGES: { key: 'md' | 'ad' | 'pd' | 'dd'; label: string }[] = [
   { key: 'dd', label: 'DD' },
 ];
 
+const getPeriodColor = (p: string) => {
+  if (p === 'bn') return 'rgb(249,115,22)';
+  return `hsl(var(--${p}-color))`;
+};
+
+const getPeriodBgColor = (p: string, opacity: string) => {
+  if (p === 'bn') return `rgba(249,115,22, ${opacity})`;
+  return `hsl(var(--${p}-color) / ${opacity})`;
+};
+
 const VedicGrid = ({ dob, mahadashas, antardashas, customNumbers, small, currentStatus: externalStatus }: VedicGridProps) => {
   const numbers = customNumbers ?? (dob ? collectGridNumbers(dob) : []);
   const counts: Record<number, number> = {};
@@ -73,30 +83,36 @@ const VedicGrid = ({ dob, mahadashas, antardashas, customNumbers, small, current
           const active = count > 0;
           const periods = periodMap[digit] || [];
 
-          const hasPeriod = periods.length > 0;
+          const displayPeriods: string[] = [];
+          if (active) displayPeriods.push('bn');
+          displayPeriods.push(...periods);
+
+          const hasDisplay = displayPeriods.length > 0;
           let cellStyle: React.CSSProperties = {};
-          if (hasPeriod) {
-            if (periods.length === 1) {
-              const c = `hsl(var(--${periods[0]}-color))`;
+          if (hasDisplay) {
+            if (displayPeriods.length === 1) {
+              const p = displayPeriods[0];
+              const c = getPeriodColor(p);
               cellStyle = {
-                background: `hsl(var(--${periods[0]}-color) / ${small ? '0.22' : '0.28'})`,
+                background: getPeriodBgColor(p, small ? '0.22' : '0.28'),
                 borderColor: c,
-                color: c,
-                boxShadow: small ? undefined : `0 0 12px hsl(var(--${periods[0]}-color) / 0.35)`,
+                color: p === 'bn' ? '#fb923c' : c,
+                boxShadow: small ? undefined : `0 0 12px ${p === 'bn' ? 'rgba(249,115,22,0.35)' : `hsl(var(--${p}-color) / 0.35)`}`,
               };
             } else {
-              const stops = periods
+              const stops = displayPeriods
                 .map((p, idx) => {
-                  const start = (idx * 100) / periods.length;
-                  const end = ((idx + 1) * 100) / periods.length;
-                  return `hsl(var(--${p}-color) / 0.32) ${start}%, hsl(var(--${p}-color) / 0.32) ${end}%`;
+                  const start = (idx * 100) / displayPeriods.length;
+                  const end = ((idx + 1) * 100) / displayPeriods.length;
+                  const bg = getPeriodBgColor(p, '0.28');
+                  return `${bg} ${start}%, ${bg} ${end}%`;
                 })
                 .join(', ');
               cellStyle = {
                 background: `linear-gradient(135deg, ${stops})`,
-                borderColor: `hsl(var(--${periods[0]}-color))`,
+                borderColor: getPeriodColor(displayPeriods[0]),
                 color: 'hsl(var(--foreground))',
-                boxShadow: small ? undefined : `0 0 12px hsl(var(--${periods[0]}-color) / 0.3)`,
+                boxShadow: small ? undefined : `0 0 12px ${displayPeriods[0] === 'bn' ? 'rgba(249,115,22,0.3)' : `hsl(var(--${displayPeriods[0]}-color) / 0.3)`}`,
               };
             }
           }
@@ -106,15 +122,11 @@ const VedicGrid = ({ dob, mahadashas, antardashas, customNumbers, small, current
               key={i}
               className={`relative ${small ? 'w-10 h-10' : 'w-16 h-16'} flex items-center justify-center rounded-md border border-border bg-card/60 backdrop-blur-sm`}
             >
-              {active || hasPeriod ? (
+              {hasDisplay ? (
                 <div
                   style={cellStyle}
-                  className={`flex items-center justify-center rounded-full font-mono font-bold transition-all ${
+                  className={`flex items-center justify-center rounded-full font-mono font-bold transition-all border ${
                     small ? 'w-7 h-7 text-[9px]' : 'w-12 h-12 text-sm'
-                  } ${
-                    hasPeriod
-                      ? 'border'
-                      : 'bg-orange-500/20 border border-orange-500 text-orange-400 shadow-[0_0_12px_rgba(249,115,22,0.35)]'
                   }`}
                 >
                   {active ? Array(count).fill(digit).join(',') : digit}
@@ -126,14 +138,14 @@ const VedicGrid = ({ dob, mahadashas, antardashas, customNumbers, small, current
               )}
 
               {/* Period badges */}
-              {periods.length > 0 && (
+              {displayPeriods.length > 0 && (
                 <div className={`absolute ${small ? '-top-1 -right-1' : '-top-1.5 -right-1.5'} flex flex-col gap-0.5 z-10`}>
-                  {periods.map(p => (
+                  {displayPeriods.map(p => (
                     <span
                       key={p}
-                      title={`${p.toUpperCase()} ${digit} • ${PLANET_MAP[digit]}`}
+                      title={`${p.toUpperCase()} ${digit} • ${p === 'bn' ? 'Birth Number' : PLANET_MAP[digit]}`}
                       className={`${small ? 'min-w-[12px] h-[10px] px-0.5 text-[6px]' : 'min-w-[20px] h-[14px] px-1 text-[8px]'} rounded-full font-bold text-white flex items-center justify-center shadow`}
-                      style={{ backgroundColor: `hsl(var(--${p}-color))` }}
+                      style={{ backgroundColor: getPeriodColor(p) }}
                     >
                       {p.toUpperCase()}
                     </span>

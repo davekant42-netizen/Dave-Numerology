@@ -13,7 +13,7 @@ import {
   buildMonths,
 } from '@/lib/numerology';
 
-type PeriodKey = 'md' | 'ad' | 'pd' | 'dd';
+type PeriodKey = 'bn' | 'md' | 'ad' | 'pd' | 'dd';
 
 function useCurrentPeriodNumbers(dob: Date, mahadashas: MahadashaEntry[], antardashas: AntardashaEntry[]) {
   const cur = findCurrentStatus(dob, mahadashas, antardashas);
@@ -23,6 +23,16 @@ function useCurrentPeriodNumbers(dob: Date, mahadashas: MahadashaEntry[], antard
   const dd = pd != null ? reduceToSingle(pd + getWeekdayValue(new Date())) : undefined;
   return { md, ad, pd, dd };
 }
+
+const getPeriodColor = (p: PeriodKey) => {
+  if (p === 'bn') return 'rgb(249,115,22)';
+  return `hsl(var(--${p}-color))`;
+};
+
+const getPeriodBgColor = (p: PeriodKey, opacity: number) => {
+  if (p === 'bn') return `rgba(249,115,22, ${opacity})`;
+  return `hsl(var(--${p}-color) / ${opacity})`;
+};
 
 function matchingPeriodsFor(
   digit: number,
@@ -36,26 +46,26 @@ function matchingPeriodsFor(
   return out;
 }
 
-function periodCellStyle(periods: PeriodKey[], active: boolean): React.CSSProperties | undefined {
+function periodCellStyle(periods: PeriodKey[]): React.CSSProperties | undefined {
   if (!periods.length) return undefined;
 
-  const baseOpacity = active ? 0.28 : 0.16;
+  const baseOpacity = 0.28;
   const background =
     periods.length === 1
-      ? `hsl(var(--${periods[0]}-color) / ${baseOpacity})`
+      ? getPeriodBgColor(periods[0], baseOpacity)
       : `linear-gradient(135deg, ${periods
           .map((p, i) => {
             const start = Math.round((i / periods.length) * 100);
             const end = Math.round(((i + 1) / periods.length) * 100);
-            return `hsl(var(--${p}-color) / ${baseOpacity}) ${start}% ${end}%`;
+            return `${getPeriodBgColor(p, baseOpacity)} ${start}% ${end}%`;
           })
           .join(', ')})`;
 
   return {
     background,
-    borderColor: `hsl(var(--${periods[0]}-color))`,
-    color: `hsl(var(--${periods[0]}-color))`,
-    boxShadow: `0 0 12px hsl(var(--${periods[0]}-color) / 0.35)`,
+    borderColor: getPeriodColor(periods[0]),
+    color: periods[0] === 'bn' ? '#fb923c' : getPeriodColor(periods[0]),
+    boxShadow: `0 0 12px ${periods[0] === 'bn' ? 'rgba(249,115,22,0.35)' : `hsl(var(--${periods[0]}-color) / 0.35)`}`,
   };
 }
 
@@ -67,7 +77,7 @@ const PeriodBadgeStack = ({ periods }: { periods: PeriodKey[] }) => {
         <span
           key={p}
           className="min-w-[18px] h-[13px] px-1 rounded-full text-[8px] font-bold text-white flex items-center justify-center shadow"
-          style={{ backgroundColor: `hsl(var(--${p}-color))` }}
+          style={{ backgroundColor: getPeriodColor(p) }}
         >
           {p.toUpperCase()}
         </span>
@@ -97,21 +107,20 @@ const VedicMiniGrid = ({
         {VEDIC_LAYOUT.map((digit, i) => {
           const count = counts[digit] || 0;
           const active = count > 0;
-          const badges = matchingPeriodsFor(digit, periodNumbers);
-          const hasPeriodColor = badges.length > 0;
+          const displayBadges: PeriodKey[] = [];
+          if (active) displayBadges.push('bn');
+          displayBadges.push(...matchingPeriodsFor(digit, periodNumbers));
+
+          const hasDisplay = displayBadges.length > 0;
           return (
             <div
               key={i}
               className="relative aspect-square flex items-center justify-center rounded-md border border-border bg-card/60 backdrop-blur-sm"
             >
-              {active || hasPeriodColor ? (
+              {hasDisplay ? (
                 <div
-                  style={periodCellStyle(badges, active)}
-                  className={`flex items-center justify-center rounded-full font-mono font-bold transition-all w-[80%] h-[80%] aspect-square text-xs ${
-                    hasPeriodColor
-                      ? 'border'
-                      : 'bg-orange-500/20 border border-orange-500 text-orange-400 shadow-[0_0_12px_rgba(249,115,22,0.35)]'
-                  }`}
+                  style={periodCellStyle(displayBadges)}
+                  className="flex items-center justify-center rounded-full font-mono font-bold transition-all w-[80%] h-[80%] aspect-square text-xs border"
                 >
                   {active ? Array(count).fill(digit).join(',') : digit}
                 </div>
@@ -120,7 +129,7 @@ const VedicMiniGrid = ({
                   {digit}
                 </span>
               )}
-              <PeriodBadgeStack periods={badges} />
+              <PeriodBadgeStack periods={displayBadges} />
             </div>
           );
         })}
