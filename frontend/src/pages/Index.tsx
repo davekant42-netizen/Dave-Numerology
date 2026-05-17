@@ -81,7 +81,7 @@ const Index = () => {
             </div>
 
             <div className="flex items-center gap-3 border-l border-border pl-4">
-              {/* {dob && (
+              {dob && (
                 <ToggleGroup
                   type="single"
                   value={dashaView}
@@ -95,7 +95,7 @@ const Index = () => {
                     Table
                   </ToggleGroupItem>
                 </ToggleGroup>
-              )} */}
+              )}
 
               {dob && (
                 <button
@@ -177,11 +177,11 @@ const Index = () => {
 
             <PredictionPanel dob={dob} name={nameInput} open={showPrediction} onOpenChange={setShowPrediction} />
 
-            {/* {dashaView === 'grid' ? (
+            {dashaView === 'grid' ? (
               <DashaCardView dob={dob} mahadashas={mahadashas} antardashas={antardashas} />
             ) : (
               <DashaTable dob={dob} mahadashas={mahadashas} antardashas={antardashas} />
-            )} */}
+            )}
           </>
         )}
 
