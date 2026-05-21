@@ -125,23 +125,30 @@ function getSequenceFrom(start: number): number[] {
   return seq;
 }
 
-// Mahadasha: starts with RN, each MD lasts [MD number] years, sequence 1-9
+// Mahadasha: starts with RN, each MD lasts [MD number] years, sequence 1-9 repeating until 120 years
 export function calculateMahadashas(dob: Date): MahadashaEntry[] {
   const rn = getRootNumber(dob);
-  const seq = getSequenceFrom(rn);
   const entries: MahadashaEntry[] = [];
   let current = new Date(dob);
+  let totalYears = 0;
+  let currentMD = rn;
 
-  for (const num of seq) {
-    const end = addYears(current, num);
+  while (totalYears < 120) {
+    const end = addYears(current, currentMD);
     entries.push({
-      number: num,
-      planet: PLANET_MAP[num],
-      years: num,
+      number: currentMD,
+      planet: PLANET_MAP[currentMD],
+      years: currentMD,
       startDate: new Date(current),
       endDate: end,
     });
+    totalYears += currentMD;
     current = end;
+
+    currentMD++;
+    if (currentMD > 9) {
+      currentMD = 1;
+    }
   }
   return entries;
 }
