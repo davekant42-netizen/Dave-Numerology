@@ -1,12 +1,11 @@
-import { useState, useMemo, useContext } from 'react';
+import React, { useState, useMemo, useContext } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { Sparkles, Sun, Moon } from 'lucide-react';
 import NumerologySummary from '@/components/NumerologySummary';
 import VedicGrid from '@/components/VedicGrid';
-import DashaCardView from '@/components/DashaCardView';
+import DashaCharts from '@/components/DashaCharts';
 import DashaTable from '@/components/DashaTable';
 import PredictionPanel from '@/components/PredictionPanel';
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { useTheme } from '@/hooks/useTheme';
 import { calculateMahadashas, calculateAntardashas, formatDateDMY } from '@/lib/numerology';
 import { AuthContext } from '@/context/AuthContext';
@@ -23,7 +22,7 @@ const Index = () => {
   const [nameInput, setNameInput] = useState(student?.name ?? '');
   const [dobInput, setDobInput] = useState(student?.dob ?? '');
   const [showPrediction, setShowPrediction] = useState(false);
-  const [dashaView, setDashaView] = useState<'grid' | 'table'>('table');
+  const [dashaView, setDashaView] = useState<'charts' | 'table'>('charts');
   const { theme, toggle } = useTheme();
 
   const dob = useMemo(() => {
@@ -81,21 +80,24 @@ const Index = () => {
             </div>
 
             <div className="flex items-center gap-3 border-l border-border pl-4">
-              {/* {dob && (
-                <ToggleGroup
-                  type="single"
-                  value={dashaView}
-                  onValueChange={(v) => v && setDashaView(v as 'grid' | 'table')}
-                  className="border border-border rounded-md p-0.5 bg-card hidden sm:flex"
-                >
-                  <ToggleGroupItem value="grid" size="sm" className="text-[11px] font-bold uppercase tracking-wider px-3 h-7 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">
-                    Grid
-                  </ToggleGroupItem>
-                  <ToggleGroupItem value="table" size="sm" className="text-[11px] font-bold uppercase tracking-wider px-3 h-7 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">
-                    Table
-                  </ToggleGroupItem>
-                </ToggleGroup>
-              )} */}
+              {dob && (
+                <div className="hidden sm:flex border border-border rounded-md p-0.5 bg-card">
+                  {(['charts', 'table'] as const).map(v => (
+                    <button
+                      key={v}
+                      type="button"
+                      onClick={() => setDashaView(v)}
+                      className={`px-3 h-7 rounded text-[11px] font-bold uppercase tracking-wider transition-colors ${
+                        dashaView === v
+                          ? 'bg-primary text-primary-foreground'
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      {v === 'charts' ? 'Charts' : 'Table'}
+                    </button>
+                  ))}
+                </div>
+              )}
 
               {dob && (
                 <button
@@ -126,10 +128,35 @@ const Index = () => {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-8">
         {/* Inputs + Vedic Grid */}
-        <div className="flex items-start gap-6 flex-wrap">
-          <div className="flex flex-col gap-3">
+        <div style={{
+          background: theme === 'dark'
+            ? 'linear-gradient(135deg,#1a1827 0%,#1e1c35 50%,#1a1827 100%)'
+            : 'linear-gradient(135deg,#f5f3ff 0%,#fdfcff 50%,#fff5fb 100%)',
+          border: `1px solid ${theme === 'dark' ? '#2e2b45' : '#e8e4f0'}`,
+          borderRadius: 20,
+          padding: '28px 32px',
+          boxShadow: theme === 'dark'
+            ? '0 4px 24px rgba(0,0,0,.4)'
+            : '0 4px 24px rgba(99,102,241,.08), 0 1px 4px rgba(99,102,241,.04)',
+          display: 'flex', alignItems: 'flex-start', gap: 36, flexWrap: 'wrap',
+        }}>
+          {/* ── inputs ── */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14, width: 210 }}>
+
+            {/* section label */}
+            <span style={{
+              fontSize: '0.58rem', fontWeight: 800, textTransform: 'uppercase',
+              letterSpacing: '2.5px', color: theme === 'dark' ? '#6b6888' : '#b0a8c0',
+            }}>
+              Profile
+            </span>
+
             <div>
-              <label className="block text-xs uppercase tracking-widest text-muted-foreground mb-1.5">
+              <label style={{
+                display: 'block', fontSize: '0.62rem', fontWeight: 700,
+                textTransform: 'uppercase', letterSpacing: '1.8px', marginBottom: 5,
+                color: theme === 'dark' ? '#6b6888' : '#a09590',
+              }}>
                 Name
               </label>
               <input
@@ -137,30 +164,103 @@ const Index = () => {
                 value={nameInput}
                 onChange={e => setNameInput(e.target.value)}
                 placeholder="Enter name"
-                className="bg-card border border-border rounded-md px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring w-56"
+                style={{
+                  width: '100%',
+                  background: theme === 'dark' ? '#1e1c35' : '#fff',
+                  border: `1.5px solid ${theme === 'dark' ? '#3d3a5c' : '#e2ddf5'}`,
+                  borderRadius: 10,
+                  padding: '9px 13px', fontSize: '0.88rem',
+                  color: theme === 'dark' ? '#e2e0f0' : '#1c1917',
+                  outline: 'none', transition: 'border-color .15s, box-shadow .15s',
+                  boxSizing: 'border-box',
+                } as React.CSSProperties}
+                onFocus={e => { e.currentTarget.style.borderColor = '#6366f1'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(99,102,241,.18)'; }}
+                onBlur={e  => { e.currentTarget.style.borderColor = theme === 'dark' ? '#3d3a5c' : '#e2ddf5'; e.currentTarget.style.boxShadow = 'none'; }}
               />
             </div>
+
             <div>
-              <label className="block text-xs uppercase tracking-widest text-muted-foreground mb-1.5">
+              <label style={{
+                display: 'block', fontSize: '0.62rem', fontWeight: 700,
+                textTransform: 'uppercase', letterSpacing: '1.8px', marginBottom: 5,
+                color: theme === 'dark' ? '#6b6888' : '#a09590',
+              }}>
                 Date of Birth
               </label>
               <input
                 type="date"
                 value={dobInput}
                 onChange={e => setDobInput(e.target.value)}
-                className="bg-card border border-border rounded-md px-3 py-2 font-mono text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-ring [color-scheme:dark]"
-                style={theme === 'light' ? { colorScheme: 'light' } : {}}
+                style={{
+                  width: '100%',
+                  background: theme === 'dark' ? '#1e1c35' : '#fff',
+                  border: `1.5px solid ${theme === 'dark' ? '#3d3a5c' : '#e2ddf5'}`,
+                  borderRadius: 10,
+                  padding: '9px 13px', fontSize: '0.88rem',
+                  color: theme === 'dark' ? '#e2e0f0' : '#1c1917',
+                  outline: 'none', transition: 'border-color .15s, box-shadow .15s',
+                  colorScheme: theme === 'light' ? 'light' : 'dark',
+                  boxSizing: 'border-box',
+                } as React.CSSProperties}
+                onFocus={e => { e.currentTarget.style.borderColor = '#6366f1'; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(99,102,241,.18)'; }}
+                onBlur={e  => { e.currentTarget.style.borderColor = theme === 'dark' ? '#3d3a5c' : '#e2ddf5'; e.currentTarget.style.boxShadow = 'none'; }}
               />
             </div>
+
             {dob && (
-              <p className="text-sm text-muted-foreground">
-                {formatDateDMY(dob)} — {dob.toLocaleDateString('en', { weekday: 'long' })}
-              </p>
+              <div style={{
+                background: theme === 'dark' ? '#1e1c35' : 'linear-gradient(135deg,#f0edff,#f9f7ff)',
+                border: `1.5px solid ${theme === 'dark' ? '#3d3a5c' : '#ddd6fe'}`,
+                borderRadius: 12, padding: '10px 14px',
+              }}>
+                <p style={{ fontWeight: 800, fontSize: '1.05rem', lineHeight: 1.3,
+                  color: theme === 'dark' ? '#a5b4fc' : '#3730a3' }}>
+                  {formatDateDMY(dob)}
+                </p>
+                <p style={{ fontSize: '0.72rem', marginTop: 3, fontWeight: 600,
+                  color: theme === 'dark' ? '#6b6888' : '#7c6fb0' }}>
+                  {dob.toLocaleDateString('en', { weekday: 'long' })}
+                </p>
+              </div>
+            )}
+
+            {nameInput && (
+              <div style={{
+                background: theme === 'dark' ? '#1e1c35' : '#fff',
+                border: `1.5px solid ${theme === 'dark' ? '#3d3a5c' : '#e8e3f5'}`,
+                borderRadius: 12, padding: '10px 14px',
+              }}>
+                <p style={{ fontSize: '0.58rem', fontWeight: 800, textTransform: 'uppercase',
+                  letterSpacing: '1.8px', marginBottom: 3,
+                  color: theme === 'dark' ? '#6b6888' : '#b0a8c0' }}>
+                  Name
+                </p>
+                <p style={{ fontWeight: 700, fontSize: '1rem', letterSpacing: '-.2px',
+                  color: theme === 'dark' ? '#e2e0f0' : '#1c1917' }}>
+                  {nameInput}
+                </p>
+              </div>
             )}
           </div>
+
+          {/* ── divider ── */}
+          <div style={{
+            width: 1, alignSelf: 'stretch', flexShrink: 0,
+            background: theme === 'dark'
+              ? 'linear-gradient(180deg,transparent,#3d3a5c 30%,#3d3a5c 70%,transparent)'
+              : 'linear-gradient(180deg,transparent,#ddd6fe 30%,#ddd6fe 70%,transparent)',
+          }} />
+
+          {/* ── vedic grid ── */}
           {dob && (
-            <div>
-              <p className="text-xs uppercase tracking-widest text-muted-foreground mb-1.5">Vedic Grid</p>
+            <div style={{ flex: 1 }}>
+              <span style={{
+                display: 'block', fontSize: '0.58rem', fontWeight: 800,
+                textTransform: 'uppercase', letterSpacing: '2.5px',
+                color: theme === 'dark' ? '#6b6888' : '#b0a8c0', marginBottom: 14,
+              }}>
+                Vedic Grid
+              </span>
               <VedicGrid dob={dob} mahadashas={mahadashas} antardashas={antardashas} />
             </div>
           )}
@@ -177,11 +277,10 @@ const Index = () => {
 
             <PredictionPanel dob={dob} name={nameInput} open={showPrediction} onOpenChange={setShowPrediction} />
 
-            {dashaView === 'grid' ? (
-              <DashaCardView dob={dob} mahadashas={mahadashas} antardashas={antardashas} />
-            ) : (
-              <DashaTable dob={dob} mahadashas={mahadashas} antardashas={antardashas} />
-            )}
+            {dashaView === 'charts'
+              ? <DashaCharts dob={dob} mahadashas={mahadashas} antardashas={antardashas} />
+              : <DashaTable  dob={dob} mahadashas={mahadashas} antardashas={antardashas} />
+            }
           </>
         )}
 
