@@ -102,15 +102,11 @@ const Index = () => {
               {dob && (
                 <button
                   type="button"
-                  onClick={() => setShowPrediction(v => !v)}
-                  className={`inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-xs font-semibold transition-all ${
-                    showPrediction
-                      ? 'bg-primary/20 text-primary border border-primary/50'
-                      : 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/25'
-                  }`}
+                  disabled
+                  className="inline-flex items-center gap-2 rounded-md px-3 py-1.5 text-xs font-semibold transition-all bg-primary/20 text-primary/50 border border-primary/30 cursor-not-allowed opacity-60"
                 >
                   <Sparkles className="h-3.5 w-3.5" />
-                  <span className="hidden sm:inline">{showPrediction ? 'Hide Prediction' : 'View Prediction'}</span>
+                  <span className="hidden sm:inline">View Prediction</span>
                 </button>
               )}
               
