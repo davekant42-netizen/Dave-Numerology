@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dave Numerology — Vedic Grid</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:            #f7f4ef;
+      --card:          #ffffff;
+      --card-subtle:   #fdfcfa;
+      --border:        #ddd8cf;
+      --border-subtle: #ece7de;
+      --text-primary:  #1c1917;
+      --text-secondary:#44403c;
+      --text-muted:    #78716c;
+      --text-faint:    #a8a29e;
+
+      --accent-indigo: #4338ca;
+      --indigo-bg:     #eef2ff;
+      --indigo-border: #c7d2fe;
+
+      --rn-blue:   #1d4ed8;
+      --rn-bg:     #dbeafe;
+      --rn-border: #93c5fd;
+
+      --dn-red:    #b91c1c;
+      --dn-bg:     #fee2e2;
+      --dn-border: #fca5a5;
+
+      --md-purple: #7c3aed;
+      --ad-green:  #047857;
+      --pd-orange: #b45309;
+      --dd-pink:   #be185d;
+
+      --shadow-sm: 0 4px 8px rgba(28,25,23,.07), 0 2px 4px rgba(28,25,23,.05);
+      --shadow-md: 0 8px 20px rgba(28,25,23,.09), 0 4px 8px rgba(28,25,23,.06);
+      --shadow-lg: 0 16px 40px rgba(28,25,23,.10), 0 6px 12px rgba(28,25,23,.07);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* background blobs */
+    body::before, body::after {
+      content: '';
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+    }
+    body::before {
+      width: 700px; height: 700px;
+      top: -250px; left: -200px;
+      background: radial-gradient(circle, rgba(99,102,241,.06) 0%, transparent 70%);
+    }
+    body::after {
+      width: 600px; height: 600px;
+      bottom: -200px; right: -150px;
+      background: radial-gradient(circle, rgba(180,83,9,.05) 0%, transparent 70%);
+    }
+
+    .page-wrapper {
+      position: relative;
+      z-index: 1;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 32px 20px 72px;
+    }
+
+    /* ── HEADER ── */
+    .site-header {
+      text-align: center;
+      margin-bottom: 44px;
+    }
+    .eyebrow {
+      font-size: .72rem;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-bottom: 12px;
+    }
+    .site-header h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 700;
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      line-height: 1.1;
+      color: var(--text-primary);
+      margin-bottom: 10px;
+    }
+    .site-header h1 .accent { color: var(--accent-indigo); }
+    .site-subtitle {
+      font-size: .9rem;
+      color: var(--text-muted);
+      margin-bottom: 22px;
+    }
+    .divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      max-width: 320px;
+      margin: 0 auto;
+    }
+    .divider-line {
+      flex: 1; height: 1px;
+      background: linear-gradient(to right, transparent, var(--border));
+    }
+    .divider-line.r {
+      background: linear-gradient(to left, transparent, var(--border));
+    }
+    .divider-star { color: var(--text-faint); font-size: .85rem; }
+
+    /* ── INPUT CARD ── */
+    .input-card {
+      background: var(--card);
+      border-radius: 24px;
+      box-shadow: var(--shadow-lg);
+      max-width: 900px;
+      margin: 0 auto 24px;
+      padding: 32px 36px;
+    }
+    .section-label {
+      font-size: .7rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--text-faint);
+      font-weight: 500;
+      margin-bottom: 22px;
+    }
+    .fields-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .field-group { display: flex; flex-direction: column; gap: 7px; }
+    .field-label {
+      font-size: .65rem;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .field-input {
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .9rem;
+      color: var(--text-primary);
+      outline: none;
+      transition: border-color .2s, background .2s, box-shadow .2s;
+      width: 100%;
+      -moz-appearance: textfield;
+    }
+    .field-input::-webkit-inner-spin-button,
+    .field-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+    .field-input:focus {
+      border-color: var(--accent-indigo);
+      background: var(--card);
+      box-shadow: 0 0 0 4px rgba(67,56,202,.11);
+    }
+    .field-input::placeholder { color: var(--text-faint); }
+
+    .generate-btn {
+      position: relative;
+      width: 100%;
+      background: #1c1917;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 14px 24px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .88rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      cursor: pointer;
+      overflow: hidden;
+      transition: transform .22s, background .22s, box-shadow .22s;
+    }
+    .generate-btn::before {
+      content: '';
+      position: absolute;
+      top: -50%; left: -60%;
+      width: 40%; height: 200%;
+      background: linear-gradient(105deg, transparent 40%, rgba(255,255,255,.08) 50%, transparent 60%);
+      pointer-events: none;
+    }
+    .generate-btn:hover {
+      transform: translateY(-2px);
+      background: var(--accent-indigo);
+      box-shadow: var(--shadow-md);
+    }
+    .generate-btn:active { transform: translateY(0); }
+
+    /* ── LEGEND CARD ── */
+    .legend-card {
+      background: var(--card);
+      border-radius: 18px;
+      box-shadow: var(--shadow-sm);
+      max-width: 900px;
+      margin: 0 auto 36px;
+      padding: 16px 24px;
+    }
+    .legend-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 22px;
+      align-items: center;
+    }
+    .legend-item { display: flex; align-items: center; gap: 7px; }
+    .legend-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 700;
+      font-size: 1.2rem;
+      color: #292524;
+      line-height: 1;
+    }
+    .legend-num.rn { color: var(--rn-blue); }
+    .legend-num.dn { color: var(--dn-red); }
+    .legend-circle {
+      width: 20px; height: 20px;
+      border-radius: 50%;
+    }
+    .legend-circle.md { background: var(--md-purple); }
+    .legend-circle.ad { background: var(--ad-green); }
+    .legend-circle.pd { background: var(--pd-orange); }
+    .legend-circle.dd { background: var(--dd-pink); }
+    .legend-text {
+      font-size: .78rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+    .legend-text.rn  { color: var(--rn-blue); }
+    .legend-text.dn  { color: var(--dn-red); }
+    .legend-text.md  { color: var(--md-purple); }
+    .legend-text.ad  { color: var(--ad-green); }
+    .legend-text.pd  { color: var(--pd-orange); }
+    .legend-text.dd  { color: var(--dd-pink); }
+
+    /* ── OUTPUT SECTION ── */
+    #output-section { display: none; }
+
+    .output-header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-bottom: 22px;
+    }
+    .output-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 700;
+      font-size: 1.4rem;
+      color: var(--text-primary);
+    }
+    .output-subtitle {
+      font-size: .78rem;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+    .output-chips { display: flex; gap: 10px; flex-wrap: wrap; }
+    .chip {
+      display: flex; align-items: center; gap: 6px;
+      border-radius: 50px;
+      padding: 6px 14px;
+      border: 1.5px solid;
+    }
+    .chip.rn { background: var(--rn-bg); border-color: var(--rn-border); }
+    .chip.dn { background: var(--dn-bg); border-color: var(--dn-border); }
+    .chip-label {
+      font-size: .62rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: 700;
+    }
+    .chip.rn .chip-label { color: var(--rn-blue); }
+    .chip.dn .chip-label { color: var(--dn-red); }
+    .chip-number {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 700;
+      font-size: 1.25rem;
+      line-height: 1;
+    }
+    .chip.rn .chip-number { color: var(--rn-blue); }
+    .chip.dn .chip-number { color: var(--dn-red); }
+
+    /* ── YEAR CARDS GRID ── */
+    .year-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+    @media (max-width: 780px)  { .year-cards-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 480px)  { .year-cards-grid { grid-template-columns: 1fr; } }
+
+    /* ── YEAR CARD ── */
+    .year-card {
+      background: var(--card);
+      border-radius: 18px;
+      border: 1px solid var(--border-subtle);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-sm);
+      transition: transform .22s, box-shadow .22s;
+    }
+    .year-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+    .year-card.current {
+      border-color: var(--indigo-border);
+      box-shadow: 0 0 0 2px rgba(67,56,202,.18), var(--shadow-md);
+    }
+
+    /* card header */
+    .card-header {
+      background: var(--card-subtle);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 10px 12px 9px;
+    }
+    .card-header-row1 {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .card-year {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: var(--text-primary);
+      line-height: 1;
+    }
+    .vedic-pill {
+      font-size: .58rem;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      font-weight: 600;
+      color: var(--accent-indigo);
+      background: var(--indigo-bg);
+      border-radius: 50px;
+      padding: 3px 8px;
+      white-space: nowrap;
+    }
+    .vedic-pill.active {
+      background: var(--accent-indigo);
+      color: #fff;
+    }
+    .period-items-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+    }
+    .period-item { display: flex; align-items: center; gap: 3px; }
+    .period-label {
+      font-size: .54rem;
+      text-transform: uppercase;
+      letter-spacing: .4px;
+      font-weight: 700;
+    }
+    .period-label.md { color: var(--md-purple); }
+    .period-label.ad { color: var(--ad-green); }
+    .period-label.pd { color: var(--pd-orange); }
+    .period-label.dd { color: var(--dd-pink); }
+
+    .period-circle {
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .period-circle.md { background: var(--md-purple); }
+    .period-circle.ad { background: var(--ad-green); }
+    .period-circle.pd { background: var(--pd-orange); }
+    .period-circle.dd { background: var(--dd-pink); }
+    .period-circle span {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 700;
+      font-size: .9rem;
+      color: #fff;
+      line-height: 1;
+    }
+
+    /* card body */
+    .card-body {
+      padding: 10px;
+      flex: 1;
+      background: var(--card);
+    }
+
+    /* ── 3×3 NUMEROLOGY GRID ── */
+    .num-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+    .grid-cell {
+      background: var(--card-subtle);
+      border: 1.5px solid var(--border-subtle);
+      border-radius: 8px;
+      min-height: 70px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      padding: 5px 5px 5px 5px;
+    }
+    .grid-cell.populated {
+      background: var(--card);
+      border-color: #d4d0c9;
+    }
+    .grid-cell.populated::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #3730a3, #4338ca);
+      opacity: .6;
+      border-radius: 8px 8px 0 0;
+    }
+    .ghost-label {
+      position: absolute;
+      top: 4px; right: 6px;
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 700;
+      font-size: .68rem;
+      color: #d4cfc8;
+      pointer-events: none;
+      line-height: 1;
+    }
+    .cell-digits {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2px 4px;
+      padding-top: 2px;
+      padding-right: 14px;
+      flex: 1;
+    }
+    .cell-digit {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 700;
+      font-size: 1.2rem;
+      line-height: 1.1;
+    }
+    .cell-digit.dob { color: #292524; }
+    .cell-digit.rn  { color: var(--rn-blue); }
+    .cell-digit.dn  { color: var(--dn-red); }
+
+    .cell-badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 3px;
+      margin-top: 4px;
+    }
+    .badge {
+      min-width: 22px;
+      height: 22px;
+      border-radius: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 5px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .6rem;
+      font-weight: 700;
+      color: #fff;
+      cursor: default;
+      transition: transform .14s;
+    }
+    .badge:hover { transform: scale(1.12); }
+    .badge.md { background: var(--md-purple); }
+    .badge.ad { background: var(--ad-green); }
+    .badge.pd { background: var(--pd-orange); }
+    .badge.dd { background: var(--dd-pink); }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      color: var(--text-faint);
+      font-size: .75rem;
+      margin-top: 40px;
+    }
+
+    /* ── ERROR ── */
+    .error-msg {
+      background: var(--dn-bg);
+      border: 1px solid var(--dn-border);
+      color: var(--dn-red);
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: .85rem;
+      font-weight: 500;
+      margin-top: 12px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+<div class="page-wrapper">
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <p class="eyebrow">Ancient Wisdom · Modern Interface</p>
+    <h1>Dave <span class="accent">Numerology</span></h1>
+    <p class="site-subtitle">Vedic Grid · Dasha System · 120-Year Timeline</p>
+    <div class="divider">
+      <span class="divider-line"></span>
+      <span class="divider-star">✦</span>
+      <span class="divider-line r"></span>
+    </div>
+  </header>
+
+  <!-- INPUT CARD -->
+  <div class="input-card">
+    <p class="section-label">Enter Your Details</p>
+    <div class="fields-grid">
+      <div class="field-group">
+        <label class="field-label" for="inp-name">Full Name</label>
+        <input class="field-input" type="text" id="inp-name" placeholder="Your name">
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="inp-day">Day</label>
+        <input class="field-input" type="number" id="inp-day" placeholder="DD" min="1" max="31">
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="inp-month">Month</label>
+        <input class="field-input" type="number" id="inp-month" placeholder="MM" min="1" max="12">
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="inp-year">Year</label>
+        <input class="field-input" type="number" id="inp-year" placeholder="YYYY" min="1900" max="2100">
+      </div>
+    </div>
+    <div class="error-msg" id="err-msg"></div>
+    <button class="generate-btn" id="gen-btn">✦ &nbsp;Generate Vedic Grid</button>
+  </div>
+
+  <!-- LEGEND CARD -->
+  <div class="legend-card">
+    <div class="legend-row">
+      <div class="legend-item">
+        <span class="legend-num">9</span>
+        <span class="legend-text">DOB Digit</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-num rn">5</span>
+        <span class="legend-text rn">Root No. (RN)</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-num dn">7</span>
+        <span class="legend-text dn">Destiny No. (DN)</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-circle md"></span>
+        <span class="legend-text md">Mahadasha</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-circle ad"></span>
+        <span class="legend-text ad">Antardasha</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-circle pd"></span>
+        <span class="legend-text pd">Pratyantar</span>
+      </div>
+      <div class="legend-item">
+        <span class="legend-circle dd"></span>
+        <span class="legend-text dd">Daily Dasha</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- OUTPUT -->
+  <div id="output-section">
+    <div class="output-header-bar">
+      <div>
+        <div class="output-title" id="out-title">Vedic Numerology Grid</div>
+        <div class="output-subtitle" id="out-sub">120-Year Dasha Timeline</div>
+      </div>
+      <div class="output-chips">
+        <div class="chip rn">
+          <span class="chip-label">RN</span>
+          <span class="chip-number" id="chip-rn">—</span>
+        </div>
+        <div class="chip dn">
+          <span class="chip-label">DN</span>
+          <span class="chip-number" id="chip-dn">—</span>
+        </div>
+      </div>
+    </div>
+    <div class="year-cards-grid" id="cards-grid"></div>
+  </div>
+
+  <footer>
+    <p>Dave Numerology &nbsp;·&nbsp; Vedic Grid System &nbsp;·&nbsp; Ancient Wisdom, Modern Interface</p>
+  </footer>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+//  NUMEROLOGY ENGINE  (ported from numerology.ts)
+// ══════════════════════════════════════════
+
+const PLANET = {
+  1:'Sun', 2:'Moon', 3:'Jupiter', 4:'Rahu',
+  5:'Mercury', 6:'Venus', 7:'Ketu', 8:'Saturn', 9:'Mars'
+};
+
+// JS day index → Vedic weekday value
+const WD_VAL = { 0:1, 1:2, 2:9, 3:5, 4:3, 5:6, 6:8 };
+
+function reduce(n) {
+  while (n > 9) n = (n+'').split('').reduce((s,d)=>s+parseInt(d),0);
+  return n;
+}
+
+function rootNumber(dob) {
+  const d = dob.getDate();
+  if (d === 10) return 1;
+  if (d === 20) return 2;
+  if (d === 30) return 3;
+  return reduce(d);
+}
+
+function destinyNumber(dob) {
+  return reduce(dob.getDate() + (dob.getMonth()+1) + reduce(dob.getFullYear()));
+}
+
+function wdVal(date) { return WD_VAL[date.getDay()]; }
+
+function addYears(date, y) {
+  const d = new Date(date);
+  d.setFullYear(d.getFullYear() + y);
+  return d;
+}
+
+function addDays(date, n) {
+  const d = new Date(date);
+  d.setDate(d.getDate() + n);
+  return d;
+}
+
+function seqFrom(start) {
+  const s = [start];
+  let n = start;
+  for (let i = 0; i < 8; i++) { n = n === 9 ? 1 : n+1; s.push(n); }
+  return s;
+}
+
+// Returns { dob: number[], rn: number[], dn: number[] }
+// dob = raw DOB digits (day + month + last-2-year), placed on grid as dark serif
+// rn  = root number digit(s), shown in blue — only when day >= 10 and not 10/20/30
+// dn  = destiny number digit, always included in red
+function collectGridDigits(dob) {
+  const day   = dob.getDate();
+  const month = dob.getMonth() + 1;
+  const yr2   = (dob.getFullYear() % 100).toString().padStart(2,'0');
+  const out = { dob: [], rn: [], dn: [] };
+
+  for (const ch of day.toString())   out.dob.push(+ch);
+  for (const ch of month.toString()) out.dob.push(+ch);
+  for (const ch of yr2)              out.dob.push(+ch);
+
+  const exempt = [10, 20, 30];
+  if (day >= 10 && !exempt.includes(day)) out.rn.push(rootNumber(dob));
+
+  out.dn.push(destinyNumber(dob));
+  return out;
+}
+
+// 120-year Mahadasha sequence (starts with RN)
+function calcMahadashas(dob) {
+  const seq = seqFrom(rootNumber(dob));
+  const out = [];
+  let cur = new Date(dob);
+  for (const n of seq) {
+    const end = addYears(cur, n);
+    out.push({ n, start: new Date(cur), end });
+    cur = end;
+  }
+  return out;
+}
+
+// Antardasha — one entry per year of life
+// formula: reduce( last2(year) + birthMonth + RN + weekday-of-DOB-that-year )
+function calcAntardashas(dob, total = 120) {
+  const rn = rootNumber(dob);
+  const bm = dob.getMonth() + 1;
+  const out = [];
+  for (let i = 0; i < total; i++) {
+    const start = addYears(dob, i);
+    const end   = addYears(dob, i+1);
+    const cy    = start.getFullYear();
+    const l2    = cy % 100;
+    const wd    = wdVal(new Date(cy, dob.getMonth(), dob.getDate()));
+    const adN   = reduce(l2 + bm + rn + wd);
+    out.push({ n: adN, start, end, calYear: cy, age: i });
+  }
+  return out;
+}
+
+// 9 Pratyantar sub-periods within one AD year
+function calcPratyantars(adN, adStart) {
+  const seq  = seqFrom(adN);
+  const yr   = adStart.getFullYear();
+  const leap = (yr%4===0 && yr%100!==0) || yr%400===0;
+  const bonus = new Array(9).fill(0);
+  if (!leap) {
+    // 5 extra days → indices 2,4,6,8 get +1, index 8 gets extra +1
+    [2,4,6,8].forEach(i => bonus[i]++);
+    bonus[8]++;
+  } else {
+    // 6 extra days → indices 1,3,5,7 get +1, index 8 gets +2
+    [1,3,5,7].forEach(i => bonus[i]++);
+    bonus[8] += 2;
+  }
+  const out = [];
+  let cur = new Date(adStart);
+  seq.forEach((n,i) => {
+    const days = n * 8 + bonus[i];
+    const end  = addDays(cur, days);
+    out.push({ n, days, start: new Date(cur), end });
+    cur = addDays(end, 1);
+  });
+  return out;
+}
+
+// Daily Dasha = reduce( PD_number + weekday-of-given-date )
+function dailyDasha(pdN, date) {
+  return reduce(pdN + wdVal(date));
+}
+
+// Format DD.MM.YYYY
+function fmt(d) {
+  return [d.getDate(),d.getMonth()+1,d.getFullYear()].map((v,i)=>i<2?String(v).padStart(2,'0'):v).join('.');
+}
+
+// ══════════════════════════════════════════
+//  GRID LAYOUT
+//  Physical order of cells in the 3×3 Vedic grid:
+//   3 | 1 | 9
+//   6 | 7 | 5
+//   2 | 8 | 4
+// ══════════════════════════════════════════
+const GRID_ORDER = [3, 1, 9, 6, 7, 5, 2, 8, 4];
+
+// ══════════════════════════════════════════
+//  UI
+// ══════════════════════════════════════════
+
+document.getElementById('gen-btn').addEventListener('click', generate);
+document.addEventListener('keydown', e => { if (e.key === 'Enter') generate(); });
+
+function showError(msg) {
+  const el = document.getElementById('err-msg');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+function clearError() {
+  document.getElementById('err-msg').style.display = 'none';
+}
+
+function generate() {
+  clearError();
+  const name  = document.getElementById('inp-name').value.trim();
+  const day   = parseInt(document.getElementById('inp-day').value);
+  const month = parseInt(document.getElementById('inp-month').value);
+  const year  = parseInt(document.getElementById('inp-year').value);
+
+  if (!day || !month || !year) { showError('Please enter day, month, and year.'); return; }
+  if (day < 1 || day > 31)     { showError('Day must be between 1 and 31.'); return; }
+  if (month < 1 || month > 12) { showError('Month must be between 1 and 12.'); return; }
+  if (year < 1900 || year > 2050) { showError('Year must be between 1900 and 2050.'); return; }
+
+  const dob = new Date(year, month - 1, day);
+  if (dob.getMonth() !== month - 1) { showError('Invalid date (e.g. Feb 30 does not exist).'); return; }
+
+  const rn      = rootNumber(dob);
+  const dn      = destinyNumber(dob);
+  const digits  = collectGridDigits(dob);
+  const mds     = calcMahadashas(dob);
+  const ads     = calcAntardashas(dob, 120);
+  const now     = new Date();
+
+  // ── update header chips ──
+  document.getElementById('out-title').textContent = name ? `${name}'s Vedic Grid` : 'Vedic Numerology Grid';
+  document.getElementById('out-sub').textContent   = `Born ${fmt(dob)} · RN ${rn} · DN ${dn} · 120-Year Dasha Timeline`;
+  document.getElementById('chip-rn').textContent   = rn;
+  document.getElementById('chip-dn').textContent   = dn;
+
+  const outSection = document.getElementById('output-section');
+  outSection.style.display = 'block';
+
+  // ── build cards ──
+  const grid = document.getElementById('cards-grid');
+  grid.innerHTML = '';
+
+  let firstCurrentCard = null;
+
+  ads.forEach(ad => {
+    // find which MD governs this year
+    const md = mds.find(m => ad.start >= m.start && ad.start < m.end);
+    const mdN = md ? md.n : rn;
+
+    // Pratyantar periods for this AD year
+    const pds  = calcPratyantars(ad.n, ad.start);
+    const isCurrent = now >= ad.start && now < ad.end;
+
+    // Pick which PD to show on the card:
+    // – current year  → the PD active right now (fallback: first PD)
+    // – past years    → last PD in that year
+    // – future years  → first PD in that year
+    let cardPD;
+    if (isCurrent) {
+      cardPD = pds.find(p => now >= p.start && now < p.end) || pds[0];
+    } else if (now >= ad.end) {
+      cardPD = pds[pds.length - 1];
+    } else {
+      cardPD = pds[0];
+    }
+
+    // DD: for current year use today, for others use the PD start date
+    const ddDate = isCurrent ? now : cardPD.start;
+    const ddN    = dailyDasha(cardPD.n, ddDate);
+
+    const card = makeYearCard({ calYear: ad.calYear, isCurrent, mdN, adN: ad.n, pdN: cardPD.n, ddN, digits });
+    grid.appendChild(card);
+    if (isCurrent && !firstCurrentCard) firstCurrentCard = card;
+  });
+
+  // scroll to output, then nudge to current year card
+  outSection.scrollIntoView({ behavior: 'smooth' });
+  if (firstCurrentCard) {
+    setTimeout(() => firstCurrentCard.scrollIntoView({ behavior: 'smooth', block: 'center' }), 700);
+  }
+}
+
+function makeYearCard({ calYear, isCurrent, mdN, adN, pdN, ddN, digits }) {
+  const card = document.createElement('div');
+  card.className = 'year-card' + (isCurrent ? ' current' : '');
+
+  // ── card header ──
+  const hdr = document.createElement('div');
+  hdr.className = 'card-header';
+
+  // row 1: year label + pill
+  const row1 = document.createElement('div');
+  row1.className = 'card-header-row1';
+
+  const yrEl = document.createElement('div');
+  yrEl.className = 'card-year';
+  yrEl.textContent = calYear;
+
+  const pill = document.createElement('div');
+  pill.className = 'vedic-pill' + (isCurrent ? ' active' : '');
+  pill.textContent = isCurrent ? '✦ Current' : '✦ Vedic Grid';
+
+  row1.appendChild(yrEl);
+  row1.appendChild(pill);
+  hdr.appendChild(row1);
+
+  // row 2: MD / AD / PD / DD circles
+  const periodsRow = document.createElement('div');
+  periodsRow.className = 'period-items-row';
+
+  [
+    { type:'md', label:'MD', n:mdN },
+    { type:'ad', label:'AD', n:adN },
+    { type:'pd', label:'PD', n:pdN },
+    { type:'dd', label:'DD', n:ddN },
+  ].forEach(({ type, label, n }) => {
+    const item = document.createElement('div');
+    item.className = 'period-item';
+
+    const lbl = document.createElement('span');
+    lbl.className = `period-label ${type}`;
+    lbl.textContent = label;
+
+    const circle = document.createElement('div');
+    circle.className = `period-circle ${type}`;
+    const numSpan = document.createElement('span');
+    numSpan.textContent = n;
+    circle.appendChild(numSpan);
+
+    item.appendChild(lbl);
+    item.appendChild(circle);
+    periodsRow.appendChild(item);
+  });
+  hdr.appendChild(periodsRow);
+  card.appendChild(hdr);
+
+  // ── card body: 3×3 grid ──
+  const body = document.createElement('div');
+  body.className = 'card-body';
+  body.appendChild(makeNumGrid(digits, mdN, adN, pdN, ddN));
+  card.appendChild(body);
+
+  return card;
+}
+
+function makeNumGrid(digits, mdN, adN, pdN, ddN) {
+  const gridEl = document.createElement('div');
+  gridEl.className = 'num-grid';
+
+  GRID_ORDER.forEach(cellNum => {
+    const cell = document.createElement('div');
+    cell.className = 'grid-cell';
+
+    // ghost label (faint fixed-position number)
+    const ghost = document.createElement('span');
+    ghost.className = 'ghost-label';
+    ghost.textContent = cellNum;
+    cell.appendChild(ghost);
+
+    // what goes in this cell?
+    const dobHits = digits.dob.filter(n => n === cellNum);
+    const rnHits  = digits.rn.filter(n  => n === cellNum);
+    const dnHits  = digits.dn.filter(n  => n === cellNum);
+
+    // dasha badges for this cell (each dasha renders independently)
+    const badges = [];
+    if (mdN === cellNum) badges.push({ type:'md', n:mdN });
+    if (adN === cellNum) badges.push({ type:'ad', n:adN });
+    if (pdN === cellNum) badges.push({ type:'pd', n:pdN });
+    if (ddN === cellNum) badges.push({ type:'dd', n:ddN });
+
+    const hasContent = dobHits.length || rnHits.length || dnHits.length || badges.length;
+    if (hasContent) cell.classList.add('populated');
+
+    // digit spans
+    if (dobHits.length || rnHits.length || dnHits.length) {
+      const digRow = document.createElement('div');
+      digRow.className = 'cell-digits';
+      dobHits.forEach(() => {
+        const s = document.createElement('span');
+        s.className = 'cell-digit dob';
+        s.textContent = cellNum;
+        digRow.appendChild(s);
+      });
+      rnHits.forEach(() => {
+        const s = document.createElement('span');
+        s.className = 'cell-digit rn';
+        s.textContent = cellNum;
+        digRow.appendChild(s);
+      });
+      dnHits.forEach(() => {
+        const s = document.createElement('span');
+        s.className = 'cell-digit dn';
+        s.textContent = cellNum;
+        digRow.appendChild(s);
+      });
+      cell.appendChild(digRow);
+    }
+
+    // badge row
+    if (badges.length) {
+      const badgeRow = document.createElement('div');
+      badgeRow.className = 'cell-badges';
+      badges.forEach(({ type, n }) => {
+        const b = document.createElement('span');
+        b.className = `badge ${type}`;
+        b.textContent = n;
+        badgeRow.appendChild(b);
+      });
+      cell.appendChild(badgeRow);
+    }
+
+    gridEl.appendChild(cell);
+  });
+
+  return gridEl;
+}
+</script>
+</body>
+</html>
