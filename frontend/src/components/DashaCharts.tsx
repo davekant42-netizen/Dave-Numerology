@@ -14,7 +14,7 @@ const PC = {
   md: { c: '#ef4444', label: 'Mahadasha' },
   ad: { c: '#22c55e', label: 'Antardasha' },
   pd: { c: '#a855f7', label: 'Pratyantar' },
-  dd: { c: '#f97316', label: 'Dina Dasha' },
+  dd: { c: '#d4af37', label: 'Dina Dasha' },
 } as const;
 type PK = keyof typeof PC;
 
